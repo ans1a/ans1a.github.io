@@ -87,7 +87,8 @@
     .title,
     .verse,
     .icons a svg,
-    #playBtn{
+    #playBtn,
+    #lyrics{                  /* letra com mesmo fogo */
       animation:fireRed 2.5s linear infinite;
     }
     @keyframes fireRed{
@@ -132,7 +133,20 @@
     }
     .icons a:active svg{transform:scale(.88)}
 
-    /* botão play – agora à esquerda */
+    /* área da letra sincronizada */
+    #lyrics{
+      margin-top:12px;
+      font-size:10px;
+      font-weight:700;
+      height:14px;
+      position:relative;
+    }
+    #lyrics span{
+      position:absolute;
+      left:0;right:0;
+      transition:opacity .4s;
+    }
+
     #playBtn{
       position:absolute;
       top:12px;
@@ -165,7 +179,6 @@
       <source src="https://i.imgur.com/Vvuveg7.mp4" type="video/mp4">
     </video>
 
-    <!-- BOTÃO PLAY – ESQUERDA -->
     <button id="playBtn" aria-label="Play/Pause">
       <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -199,10 +212,18 @@
         </svg>
       </a>
     </div>
+
+    <!-- LETRA SINCRONIZADA -->
+    <div id="lyrics">
+      <span id="lyr1">i don't know what you're feeling</span>
+      <span id="lyr2" style="opacity:0">but i feel it too</span>
+      <span id="lyr3" style="opacity:0">running through my veins</span>
+      <span id="lyr4" style="opacity:0">unknown feeling</span>
+    </div>
+
     <div id="visitor-ip"></div>
   </div>
 
-  <!-- ÁUDIO PARA O PLAY -->
   <audio id="bgMusic" loop>
     <source src="https://github.com/ansiap/lofi/raw/refs/heads/main/unknown%20feelings.mp3" type="audio/mpeg">
   </audio>
@@ -223,22 +244,46 @@
       setTimeout(loop,4400);
     })();
 
-    // play/pause toggle
+    // play/pause + letra sincronizada
     const btn = document.getElementById('playBtn');
     const playIco = document.getElementById('playIcon');
     const pauseIco = document.getElementById('pauseIcon');
     const audio = document.getElementById('bgMusic');
     let playing = false;
 
+    // sequência de tempos (em ms) para cada linha da letra
+    const times  = [0, 3200, 6400, 9600];   // ajuste aqui se precisar
+    const lines  = ['lyr1','lyr2','lyr3','lyr4'];
+    let lyricInterval;
+
+    function startLyrics(){
+      let idx = 0;
+      lyricInterval = setInterval(()=>{
+        // apaga todas
+        lines.forEach(id=> document.getElementById(id).style.opacity = 0);
+        // mostra a atual
+        document.getElementById(lines[idx]).style.opacity = 1;
+        idx = (idx+1)%lines.length;
+      },3200);                  // mesma duração das frases
+    }
+
+    function stopLyrics(){
+      clearInterval(lyricInterval);
+      lines.forEach(id=> document.getElementById(id).style.opacity = 0);
+      document.getElementById(lines[0]).style.opacity = 1; // volta à primeira
+    }
+
     btn.addEventListener('click', () => {
       if(playing){
         audio.pause();
         playIco.style.display = 'block';
         pauseIco.style.display = 'none';
+        stopLyrics();
       } else {
         audio.play();
         playIco.style.display = 'none';
         pauseIco.style.display = 'block';
+        startLyrics();
       }
       playing = !playing;
     });
