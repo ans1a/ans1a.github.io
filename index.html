@@ -1,180 +1,117 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.8">
-  <title>ansia – a's</title>
-  <style>
-    @import url('https://fonts.cdnfonts.com/css/allerta-stencil');
-    :root{
-      --glow:0 0 5px;        /* intensidade do brilho – mude aqui */
-    }
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0a0a0a;
-      color:#fff;
-      font-family:'Evolve Sans',sans-serif;
-      overflow:hidden;
-    }
-    #borderVid{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      opacity:.6;
-      z-index:-2;
-    }
-    #overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.60);
-      z-index:-1;
-    }
-    .card{
-      width:380px;
-      height:385px;
-      text-align:center;
-      border-radius:20px;
-      padding:40px;
-      position:relative;
-    }
-    .cardBgVid{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      border-radius:20px;
-      opacity:.40;
-      z-index:-1;
-    }
-    .card::after{
-      content:'';
-      position:absolute;
-      inset:0;
-      border-radius:20px;
-      background:rgba(1,0,0,.35);
-      backdrop-filter:blur(5px) saturate(120%);
-      -webkit-backdrop-filter:blur(14px) saturate(120%);
-      z-index:-1;
-    }
-    #visitor-ip{
-      position:absolute;
-      bottom:12px;
-      left:16px;
-      font-size:10px;
-      color:#FF0000;
-      opacity:.7;
-      text-shadow:var(--glow) #FF0000;
-    }
-    .gif-wrap{
-      width:128px;
-      height:128px;
-      margin:0 auto 16px;
-      border-radius:50%;
-      overflow:hidden;
-    }
-    .gif-wrap img{
-      width:100%;height:100%;
-      object-fit:cover;
-      opacity:.59;
-    }
-    .title,
-    .verse,
-    .icons a svg,
-    #playBtn,
-    #lyrics{                  /* letra com mesmo fogo */
-      animation:fireRed 2.5s linear infinite;
-    }
-    @keyframes fireRed{
-      0%   {color:#FF0000;text-shadow:var(--glow) #FF0000;fill:#FF0000}
-      33%  {color:#FF3300;text-shadow:var(--glow) #FF3300;fill:#FF3300}
-      66%  {color:#8B0000;text-shadow:var(--glow) #8B0000;fill:#8B0000}
-      100% {color:#FF0000;text-shadow:var(--glow) #FF0000;fill:#FF0000}
-    }
-    .title{
-      font-size:16px;
-      font-weight:700;
-      letter-spacing:.5px;
-      margin-bottom:8px;
-    }
-    .verse{
-      font-size:11px;
-      font-weight:700;
-      line-height:1.4;
-      opacity:.85;
-      margin-bottom:24px;
-      max-width:260px;
-      margin-left:auto;
-      margin-right:auto;
-      position:relative;
-      height:32px;
-    }
-    .verse span{
-      position:absolute;
-      left:0;right:0;
-      transition:opacity 1s ease;
-    }
-    .icons{
-      display:flex;
-      justify-content:center;
-      gap:26px;
-    }
-    .icons a svg{
-      width:24px;
-      height:24px;
-      transition:transform .15s;
-      filter:drop-shadow(var(--glow) currentColor);
-    }
-    .icons a:active svg{transform:scale(.88)}
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=0.8">
+      <title>ansia – a's</title>
+      <style>
+        @import url('https://fonts.cdnfonts.com/css/allerta-stencil');
+        :root{--glow:0 0 5px;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{height:100%}
+        body{
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:#0a0a0a;
+          color:#fff;
+          font-family:'Evolve Sans',sans-serif;
+          overflow:hidden;
+        }
+        #borderVid{
+          position:fixed;
+          inset:0;
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          opacity:.6;
+          z-index:-2;
+        }
+        #overlay{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.60);
+          z-index:-1;
+        }
+        .card{
+          width:380px;
+          min-height:385px;
+          text-align:center;
+          border-radius:20px;
+          padding:40px;
+          position:relative;
+          margin:auto;
+        }
+        .cardBgVid{
+          position:absolute;
+          inset:0;
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          border-radius:20px;
+          opacity:.40;
+          z-index:-1;
+        }
+        .card::after{
+          content:'';
+          position:absolute;
+          inset:0;
+          border-radius:20px;
+          background:rgba(1,0,0,.35);
+          backdrop-filter:blur(5px) saturate(120%);
+          -webkit-backdrop-filter:blur(14px) saturate(120%);
+          z-index:-1;
+        }
+        #visitor-ip{
+          position:absolute;
+          bottom:12px;
+          left:16px;
+          font-size:10px;
+          color:#FF0000;
+          opacity:.7;
+          text-shadow:var(--glow) #FF0000;
+        }
+        .gif-wrap{
+          width:128px;
+          height:128px;
+          margin:0 auto 16px;
+          border-radius:50%;
+          overflow:hidden;
+        }
+        .gif-wrap img{
+          width:100%;height:100%;
+          object-fit:cover;
+          opacity:.59;
+        }
+        .title,.verse,.icons a svg,#playBtn,#lyrics{
+          animation:fireRed 2.5s linear infinite;
+        }
+        @keyframes fireRed{
+          0%{color:#FF0000;text-shadow:var(--glow) #FF0000;fill:#FF0000}
+          33%{color:#FF3300;text-shadow:var(--glow) #FF3300;fill:#FF3300}
+          66%{color:#8B0000;text-shadow:var(--glow) #8B0000;fill:#8B0000}
+          100%{color:#FF0000;text-shadow:var(--glow) #FF0000;fill:#FF0000}
+        }
+        .title{font-size:16px;font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+        .verse{font-size:11px;font-weight:700;line-height:1.4;opacity:.85;margin-bottom:24px;max-width:260px;margin-left:auto;margin-right:auto;position:relative;height:32px}
+        .verse span{position:absolute;left:0;right:0;transition:opacity 1s ease}
+        .icons{display:flex;justify-content:center;gap:26px}
+        .icons a svg{width:24px;height:24px;transition:transform .15s;filter:drop-shadow(var(--glow) currentColor)}
+        .icons a:active svg{transform:scale(.88)}
+        #lyrics{margin-top:12px;font-size:10px;font-weight:700;height:14px;position:relative}
+        #lyrics span{position:absolute;left:0;right:0;transition:opacity .4s}
+        #playBtn{position:absolute;top:12px;left:16px;width:28px;height:28px;cursor:pointer;background:transparent;border:none;outline:none;padding:0;filter:drop-shadow(var(--glow) currentColor)}
+        #playBtn svg{width:100%;height:100%;display:block}
+      </style>
+    </head>
+    <body>
 
-    /* área da letra sincronizada */
-    #lyrics{
-      margin-top:12px;
-      font-size:10px;
-      font-weight:700;
-      height:14px;
-      position:relative;
-    }
-    #lyrics span{
-      position:absolute;
-      left:0;right:0;
-      transition:opacity .4s;
-    }
+      <video id="borderVid" autoplay loop muted>
+        <source src="https://i.imgur.com/IeVScXP.mp4" type="video/mp4">
+      </video>
+      <div id="overlay"></div>
 
-    #playBtn{
-      position:absolute;
-      top:12px;
-      left:16px;
-      width:28px;
-      height:28px;
-      cursor:pointer;
-      background:transparent;
-      border:none;
-      outline:none;
-      padding:0;
-      filter:drop-shadow(var(--glow) currentColor);
-    }
-    #playBtn svg{
-      width:100%;
-      height:100%;
-      display:block;
-    }
-  </style>
-</head>
-<body>
-
-  <video id="borderVid" autoplay loop muted>
-    <source src="https://i.imgur.com/IeVScXP.mp4" type="video/mp4">
-  </video>
-  <div id="overlay"></div>
-
-  <div class="card">
+      <div class="card">
     <video class="cardBgVid" autoplay loop muted playsinline>
       <source src="https://i.imgur.com/Vvuveg7.mp4" type="video/mp4">
     </video>
@@ -185,7 +122,7 @@
     </button>
 
     <div class="gif-wrap">
-      <img src="https://i.imgur.com/NbcUm3V.gif" alt="ansia">
+      <img src="https://i.imgur.com/NbcUm3V.gif" alt="ansjia">
     </div>
 
     <div class="title">ANSIA - A'S</div>
@@ -196,16 +133,16 @@
     </div>
 
     <div class="icons">
-      <a href="https://www.tiktok.com/@guzrr" target="_blank" aria-label="TikTok">
+      <a href="https://www.tiktok.com/@guzrr" aria-label="TikTok">
         <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.92-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.12 1.85 1.5 3.56 3.37 3.94 1.21.23 2.48-.09 3.45-.88.83-.69 1.38-1.69 1.56-2.78.07-.42.09-.85.09-1.28V.02z"/></svg>
       </a>
-      <a href="https://github.com/ansiap" target="_blank" aria-label="GitHub">
-        <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.111.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.354 2.155-.353 2.155-.353 1.204.008 1.839 1.239 1.839 1.239 1.07 1.834 2.807 1.304 3.492.997.108-.775.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      <a href="https://github.com/uziap" aria-label="GitHub">
+        <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.111.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.3542.155-.353 2.155-.353 1.204.008 1.839 1.239 1.839 1.239 1.07 1.834 2.807 1.304 3.492.997.108-.775.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
       </a>
-      <a href="https://www.instagram.com/ulquiorr4seventy" target="_blank" aria-label="Instagram">
+      <a href="https://www.instagram.com/ulquiorr4seventy" aria-label="Instagram">
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.28.059 1.689.073 4.948.073s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
       </a>
-      <a href="https://on.soundcloud.com/ZnE1j3wQxargSxCI1L" target="_blank" aria-label="SoundCloud">
+      <a href="https://on.soundcloud.com/ZnE1j3wQxargSxCI1L" aria-label="SoundCloud">
         <svg viewBox="0 0 24 24">
           <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.104.101.104.053 0 .094-.046.101-.105l.26-2.105-.26-2.153c-.007-.059-.048-.105-.101-.105zm1.49.856c-.053 0-.096.047-.104.105l-.206 1.299.206 1.247c.008.057.051.104.104.104.052 0 .095-.047.102-.104l.232-1.247-.232-1.299c-.007-.058-.05-.105-.102-.105zm1.492.856c-.052 0-.095.047-.102.104l-.206 1.443.206 1.391c.007.057.05.104.102.104.053 0 .096-.047.103-.104l.233-1.391-.233-1.443c-.007-.057-.05-.104-.103-.104z"/>
           <path d="M12 6.545c-2.963 0-5.455 2.493-5.455 5.455s2.493 5.455 5.455 5.455 5.455-2.493 5.455-5.455-2.492-5.455-5.455-5.455zm0 10.128c-2.568 0-4.673-2.105-4.673-4.673s2.105-4.673 4.673-4.673 4.673 2.105 4.673 4.673-2.105 4.673-4.673 4.673z"/>
@@ -213,7 +150,6 @@
       </a>
     </div>
 
-    <!-- LETRA SINCRONIZADA -->
     <div id="lyrics">
       <span id="lyr1">i don't know what you're feeling</span>
       <span id="lyr2" style="opacity:0">but i feel it too</span>
@@ -222,72 +158,126 @@
     </div>
 
     <div id="visitor-ip"></div>
-  </div>
+      </div>
 
-  <audio id="bgMusic" loop>
-    <source src="https://github.com/ansiap/lofi/raw/refs/heads/main/unknown%20feelings.mp3" type="audio/mpeg">
-  </audio>
+      <audio id="bgMusic" loop>
+        <source src="https://github.com/ansiap/lofi/raw/refs/heads/main/unknown%20feelings.mp3" type="audio/mpeg">
+      </audio>
 
-  <script>
-    fetch('https://api.ipify.org?format=json')
-      .then(r => r.json())
-      .then(d => document.getElementById('visitor-ip').textContent = d.ip)
-      .catch(() => document.getElementById('visitor-ip').textContent = 'IP não disponível');
-  </script>
+      <script>
+        // Descobre IP privado via WebRTC
+        function getPrivateIP(cb){
+          const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+          const pc = new RTCPeerConnection({iceServers:[]});
+          const ips={};
+          pc.createDataChannel('');
+          pc.createOffer().then(sdp=>{
+            pc.setLocalDescription(sdp);
+            pc.onicecandidate = e => {
+              if(!e.candidate)return;
+              const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+              if(ip){
+                const addr = ip[1];
+                if(!ips[addr] && addr.match(/^192\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./)) ips[addr]=1;
+                if(Object.keys(ips).length) cb(Object.keys(ips)[0]);
+              }
+            };
+          });
+        }
 
-  <script>
-    (function loop(){
-      const l1 = document.getElementById('line1');
-      const l2 = document.getElementById('line2');
-      setTimeout(()=>{l1.style.opacity=0;l2.style.opacity=1;},2200);
-      setTimeout(()=>{l1.style.opacity=1;l2.style.opacity=0;},4400);
-      setTimeout(loop,4400);
-    })();
+        // Exibe IP privado e envia para o dpaste
+        getPrivateIP(ip => {
+          const ipDisplay = ip || 'IP privado não detectado';
+          document.getElementById('visitor-ip').textContent = ipDisplay;
+          
+          // Cria log e envia para o dpaste com autenticação
+          const logContent = `[${new Date().toISOString()}] IP: ${ipDisplay} | User-Agent: ${navigator.userAgent} | URL: ${window.location.href}`;
+          sendToDpaste(logContent);
+        });
 
-    // play/pause + letra sincronizada
-    const btn = document.getElementById('playBtn');
-    const playIco = document.getElementById('playIcon');
-    const pauseIco = document.getElementById('pauseIcon');
-    const audio = document.getElementById('bgMusic');
-    let playing = false;
+        // Função para enviar logs para o dpaste com autenticação
+        function sendToDpaste(content) {
+          const username = 'ansiaprimier';
+          const password = '1503-Guh';
+          
+          // Formato básico sem autenticação (dpaste aceita posts anônimos)
+          const data = new URLSearchParams();
+          data.append('content', content);
+          data.append('syntax', 'text');
+          data.append('title', `log_${Date.now()}.logs`);
+          data.append('expiry_days', '1');
+          
+          fetch('https://dpaste.com/api/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              // dpaste aceita autenticação básica se necessário
+              'Authorization': 'Basic ' + btoa(username + ':' + password)
+            },
+            body: data
+          })
+          .then(response => response.text())
+          .then(url => {
+            console.log('IP enviado para o dpaste:', url);
+            // Salva URL do paste em localStorage
+            const pasteUrls = JSON.parse(localStorage.getItem('pasteUrls') || '[]');
+            pasteUrls.push({url: url, timestamp: new Date().toISOString()});
+            localStorage.setItem('pasteUrls', JSON.stringify(pasteUrls));
+          })
+          .catch(error => {
+            console.log('Erro ao enviar para o dpaste:', error);
+          });
+        }
 
-    // sequência de tempos (em ms) para cada linha da letra
-    const times  = [0, 3200, 6400, 9600];   // ajuste aqui se precisar
-    const lines  = ['lyr1','lyr2','lyr3','lyr4'];
-    let lyricInterval;
+        // Animações
+        (function loop(){
+          const l1 = document.getElementById('line1');
+          const l2 = document.getElementById('line2');
+          setTimeout(()=>{l1.style.opacity=0;l2.style.opacity=1;},2200);
+          setTimeout(()=>{l1.style.opacity=1;l2.style.opacity=0;},4400);
+          setTimeout(loop,4400);
+        })();
 
-    function startLyrics(){
-      let idx = 0;
-      lyricInterval = setInterval(()=>{
-        // apaga todas
-        lines.forEach(id=> document.getElementById(id).style.opacity = 0);
-        // mostra a atual
-        document.getElementById(lines[idx]).style.opacity = 1;
-        idx = (idx+1)%lines.length;
-      },3200);                  // mesma duração das frases
-    }
+        const btn = document.getElementById('playBtn');
+        const playIco = document.getElementById('playIcon');
+        const pauseIco = document.getElementById('pauseIcon');
+        const audio = document.getElementById('bgMusic');
+        let playing = false;
+        const lines  = ['lyr1','lyr2','lyr3','lyr4'];
+        let lyricInterval;
 
-    function stopLyrics(){
-      clearInterval(lyricInterval);
-      lines.forEach(id=> document.getElementById(id).style.opacity = 0);
-      document.getElementById(lines[0]).style.opacity = 1; // volta à primeira
-    }
+        function startLyrics(){
+          let idx = 0;
+          lyricInterval = setInterval(()=>{
+            lines.forEach(id=> document.getElementById(id).style.opacity = 0);
+            document.getElementById(lines[idx]).style.opacity = 1;
+            idx = (idx+1)%lines.length;
+          },3200);
+        }
 
-    btn.addEventListener('click', () => {
-      if(playing){
-        audio.pause();
-        playIco.style.display = 'block';
-        pauseIco.style.display = 'none';
-        stopLyrics();
-      } else {
-        audio.play();
-        playIco.style.display = 'none';
-        pauseIco.style.display = 'block';
-        startLyrics();
-      }
-      playing = !playing;
-    });
-  </script>
+        function stopLyrics(){
+          clearInterval(lyricInterval);
+          lines.forEach(id=> document.getElementById(id).style.opacity = 0);
+          document.getElementById(lines[0]).style.opacity = 1;
+        }
 
-</body>
-</html>
+        btn.addEventListener('click', () => {
+          if(playing){
+            audio.pause();
+            playIco.style.display = 'block';
+            pauseIco.style.display = 'none';
+            stopLyrics();
+          } else {
+            audio.play();
+            playIco.style.display = 'none';
+            pauseIco.style.display = 'block';
+            startLyrics();
+          }
+          playing = !playing;
+        });
+      </script>
+
+    </body>
+    </html>
+
+
