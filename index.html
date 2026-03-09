@@ -1,280 +1,357 @@
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=0.8">
-      <title>ansia – a's</title>
-      <style>
-        @import url('https://fonts.cdnfonts.com/css/allerta-stencil');
-        :root{--glow:0 0 5px;}
-        *{margin:0;padding:0;box-sizing:border-box}
-        html,body{height:100%}
-        body{
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          background:#0a0a0a;
-          color:#fff;
-          font-family:'Evolve Sans',sans-serif;
-          overflow:hidden;
-        }
-        #borderVid{
-          position:fixed;
-          inset:0;
-          width:100%;
-          height:100%;
-          object-fit:cover;
-          opacity:.6;
-          z-index:-2;
-        }
-        #overlay{
-          position:fixed;
-          inset:0;
-          background:rgba(0,0,0,.60);
-          z-index:-1;
-        }
-        .card{
-          width:380px;
-          min-height:385px;
-          text-align:center;
-          border-radius:20px;
-          padding:40px;
-          position:relative;
-          margin:auto;
-        }
-        .cardBgVid{
-          position:absolute;
-          inset:0;
-          width:100%;
-          height:100%;
-          object-fit:cover;
-          border-radius:20px;
-          opacity:.50;
-          z-index:-1;
-        }
-        .card::after{
-          content:'';
-          position:absolute;
-          inset:0;
-          border-radius:20px;
-          background:rgba(1,0,0,.35);
-          backdrop-filter:blur(0px) saturate(120%);
-          -webkit-backdrop-filter:blur(0px) saturate(120%);
-          z-index:-1;
-        }
-        #visitor-ip{
-          position:absolute;
-          bottom:12px;
-          left:16px;
-          font-size:10px;
-          color:#ffffff;
-          opacity:.7;
-          text-shadow:var(--glow) #ffffff;
-        }
-        .gif-wrap{
-          width:128px;
-          height:128px;
-          margin:0 auto 16px;
-          border-radius:50%;
-          overflow:hidden;
-        }
-        .gif-wrap img{
-          width:100%;height:100%;
-          object-fit:cover;
-          opacity:.59;
-        }
-        .title,.verse,.icons a svg,#playBtn,#lyrics{
-          animation:fireRed 2.5s linear infinite;
-        }
-        @keyframes fireRed{
-  0%   { color:#ffffff; text-shadow:var(--glow) #ffffff; fill:#ffffff }
-  50%  { color:#ffff99; text-shadow:var(--glow) #ffff99; fill:#ffff99 }
-  100% { color:#ffffff; text-shadow:var(--glow) #ffffff; fill:#ffffff }
-        }
-        .title{font-size:16px;font-weight:700;letter-spacing:.5px;margin-bottom:8px}
-        .verse{font-size:11px;font-weight:700;line-height:1.4;opacity:.85;margin-bottom:24px;max-width:260px;margin-left:auto;margin-right:auto;position:relative;height:32px}
-        .verse span{position:absolute;left:0;right:0;transition:opacity 1s ease}
-        .icons{display:flex;justify-content:center;gap:26px}
-        .icons a svg{width:24px;height:24px;transition:transform .15s;filter:drop-shadow(var(--glow) currentColor)}
-        .icons a:active svg{transform:scale(.88)}
-        #lyrics{margin-top:12px;font-size:10px;font-weight:700;height:14px;position:relative}
-        #lyrics span{position:absolute;left:0;right:0;transition:opacity .4s}
-        #playBtn{position:absolute;top:12px;left:16px;width:28px;height:28px;cursor:pointer;background:transparent;border:none;outline:none;padding:0;filter:drop-shadow(var(--glow) currentColor)}
-        #playBtn svg{width:100%;height:100%;display:block}
-      </style>
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <title>ansia – a's</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/allerta-stencil');
+    :root{--glow:0 0 8px;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overflow:hidden;}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:#0a0a0a;color:#fff;
+      font-family:'Evolve Sans',sans-serif;
+    }
 
-      <video id="borderVid" autoplay loop muted>
-        <source src="https://i.imgur.com/5BvxvdT_lq.mp4" type="video/mp4">
-      </video>
-      <div id="overlay"></div>
+    /* ── INTRO OVERLAY ── */
+    #intro{
+      position:fixed;inset:0;z-index:999;
+      background:rgba(0,0,0,1);
+      display:flex;align-items:center;justify-content:center;
+      transition:opacity 1s ease, backdrop-filter 1s ease;
+    }
+    #intro.fade-out{ opacity:0; pointer-events:none; }
 
-      <div class="card">
-        <video class="cardBgVid" autoplay loop muted playsinline>
-          <source src="https://i.imgur.com/CBldYPB.mp4" type="video/mp4">
-        </video>
+    /* canvas de bolhas atrás do conteúdo da intro */
+    #bubbleCanvas{
+      position:absolute;inset:0;width:100%;height:100%;
+    }
 
-        <button id="playBtn" aria-label="Play/Pause">
-          <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
+    /* ── BACKGROUND ── */
+    #borderVid{
+      position:fixed;inset:0;width:100%;height:100%;
+      object-fit:cover;opacity:.6;z-index:-2;
+    }
+    #overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.60);z-index:-1;
+    }
 
-        <div class="gif-wrap">
-          <img src="https://i.imgur.com/NbcUm3V.gif" alt="">
-        </div>
+    /* ── CARD ── */
+    .card{
+      width:380px;min-height:385px;text-align:center;
+      border-radius:20px;padding:40px;position:relative;margin:auto;
+      /* começa invisível e fora da tela (acima) */
+      opacity:0;
+      transform:translateY(-60px);
+      filter:blur(12px);
+    }
+    /* cada filho com delay escalonado cai de cima pra baixo */
+    .card .slide-item{
+      opacity:0;
+      transform:translateY(-40px);
+      filter:blur(8px);
+      transition: opacity .6s ease, transform .6s ease, filter .6s ease;
+    }
+    .card.revealed{
+      opacity:1;
+      transform:translateY(0);
+      filter:blur(0);
+      transition: opacity .8s ease, transform .8s ease, filter .8s ease;
+    }
+    .card.revealed .slide-item{ opacity:1; transform:translateY(0); filter:blur(0); }
+    .card.revealed .slide-item:nth-child(1){ transition-delay:.05s }
+    .card.revealed .slide-item:nth-child(2){ transition-delay:.15s }
+    .card.revealed .slide-item:nth-child(3){ transition-delay:.28s }
+    .card.revealed .slide-item:nth-child(4){ transition-delay:.42s }
+    .card.revealed .slide-item:nth-child(5){ transition-delay:.56s }
+    .card.revealed .slide-item:nth-child(6){ transition-delay:.70s }
+    .card.revealed .slide-item:nth-child(7){ transition-delay:.84s }
 
-        <div class="title">ANSIA - A'S</div>
-        <div class="title">If it's so, Then come on, give this loverboy a try, I'll put the sparkle right back in your eyes</div>
-        <div class="verse">
-          <span id="line1">Is it wrong </span>
-          <span id="line2" style="opacity:0">To think my love could really help you out?</span>
-        </div>
+    .cardBgImg{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;border-radius:20px;opacity:.50;z-index:-1;
+    }
+    .card::after{
+      content:'';position:absolute;inset:0;border-radius:20px;
+      background:rgba(1,0,0,.35);
+      backdrop-filter:blur(0px) saturate(120%);
+      -webkit-backdrop-filter:blur(0px) saturate(120%);
+      z-index:-1;
+    }
+    .gif-wrap{
+      width:128px;height:128px;
+      margin:0 auto 16px;border-radius:50%;overflow:hidden;
+    }
+    .gif-wrap img{width:100%;height:100%;object-fit:cover;opacity:.59;}
 
-        <div class="icons">
-          <a href="https://www.tiktok.com/@guzrr" target="_blank" aria-label="TikTok">
-            <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.92-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.12 1.85 1.5 3.56 3.37 3.94 1.21.23 2.48-.09 3.45-.88.83-.69 1.38-1.69 1.56-2.78.07-.42.09-.85.09-1.28V.02z"/></svg>
-          </a>
-          <a href="https://github.com/github" target="_blank" aria-label="GitHub">
-            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.111.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.354 2.155-.353 2.155-.353 1.204.008 1.839 1.239 1.839 1.239 1.07 1.834 2.807 1.304 3.492.997.108-.775.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          </a>
-          <a href="https://www.instagram.com/violentarei" target="_blank" aria-label="Instagram">
-            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.28.059 1.689.073 4.948.073s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          </a>
-          <a href="https://on.soundcloud.com/ZnE1j3wQxargSxCI1L" target="_blank" aria-label="SoundCloud">
-            <svg viewBox="0 0 24 24">
-              <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.104.101.104.053 0 .094-.046.101-.105l.26-2.105-.26-2.153c-.007-.059-.048-.105-.101-.105zm1.49.856c-.053 0-.096.047-.104.105l-.206 1.299.206 1.247c.008.057.051.104.104.104.052 0 .095-.047.102-.104l.232-1.247-.232-1.299c-.007-.058-.05-.105-.102-.105zm1.492.856c-.052 0-.095.047-.102.104l-.206 1.443.206 1.391c.007.057.05.104.102.104.053 0 .096-.047.103-.104l.233-1.391-.233-1.443c-.007-.057-.05-.104-.103-.104z"/>
-              <path d="M12 6.545c-2.963 0-5.455 2.493-5.455 5.455s2.493 5.455 5.455 5.455 5.455-2.493 5.455-5.455-2.492-5.455-5.455-5.455zm0 10.128c-2.568 0-4.673-2.105-4.673-4.673s2.105-4.673 4.673-4.673 4.673 2.105 4.673 4.673-2.105 4.673-4.673 4.673z"/>
-            </svg>
-          </a>
-        </div>
+    .title,.icons a svg,#playBtn,#lyrics{
+      animation:glowWhite 2.5s ease-in-out infinite;
+    }
+    @keyframes glowWhite{
+      0%  { color:#fff;text-shadow:var(--glow) #fff;fill:#fff;filter:drop-shadow(0 0 4px #fff); }
+      50% { color:#fff;text-shadow:0 0 14px #fff,0 0 28px #fff;fill:#fff;filter:drop-shadow(0 0 10px #fff); }
+      100%{ color:#fff;text-shadow:var(--glow) #fff;fill:#fff;filter:drop-shadow(0 0 4px #fff); }
+    }
+    .title{font-size:16px;font-weight:700;letter-spacing:.5px;margin-bottom:8px;}
 
-        <div id="lyrics">
-          <span id="lyr1">Well, for one, her heart belongs to another</span>
-          <span id="lyr2" style="opacity:0">For one, her heart belongs to another</span>
-          <span id="lyr3" style="opacity:0">And no other heart will do</span>
-          <span id="lyr4" style="opacity:0">oh</span>
-        </div>
+    .star-wrap{
+      display:flex;justify-content:center;align-items:center;
+      margin-bottom:20px;height:36px;
+    }
+    .star{
+      font-size:28px;line-height:1;color:#fff;
+      animation:spinStar 4s linear infinite, glowStar 2.5s ease-in-out infinite;
+      display:inline-block;transform-origin:center;
+    }
+    @keyframes spinStar{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @keyframes glowStar{
+      0%  {text-shadow:0 0 6px #fff,0 0 12px #fff;}
+      50% {text-shadow:0 0 18px #fff,0 0 36px #fff,0 0 60px #fff;}
+      100%{text-shadow:0 0 6px #fff,0 0 12px #fff;}
+    }
 
-        <div id="visitor-ip"></div>
-      </div>
+    .icons{display:flex;justify-content:center;gap:26px;margin-bottom:2px;}
+    .icons a{display:flex;align-items:center;justify-content:center;}
+    .icons a svg{
+      width:24px;height:24px;fill:#fff;
+      transition:transform .15s;
+      animation:glowWhite 2.5s ease-in-out infinite;
+    }
+    .icons a:active svg{transform:scale(.88);}
 
-      <audio id="bgMusic" loop>
-        <source src="https://github.com/ansiap/lofi/raw/refs/heads/main/unknown%20feelings.mp3" type="audio/mpeg">
-      </audio>
+    #lyrics{margin-top:12px;font-size:10px;font-weight:700;height:14px;position:relative;}
+    #lyrics span{position:absolute;left:0;right:0;transition:opacity .4s;color:#fff;}
 
-      <script>
-        // Descobre IP privado via WebRTC
-        function getPrivateIP(cb){
-          const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-          const pc = new RTCPeerConnection({iceServers:[]});
-          const ips={};
-          pc.createDataChannel('');
-          pc.createOffer().then(sdp=>{
-            pc.setLocalDescription(sdp);
-            pc.onicecandidate = e => {
-              if(!e.candidate)return;
-              const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-              if(ip){
-                const addr = ip[1];
-                if(!ips[addr] && addr.match(/^192\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./)) ips[addr]=1;
-                if(Object.keys(ips).length) cb(Object.keys(ips)[0]);
-              }
-            };
-          });
-        }
+    #playBtn{
+      position:absolute;top:12px;left:16px;
+      width:28px;height:28px;
+      cursor:pointer;background:transparent;border:none;outline:none;padding:0;
+    }
+    #playBtn svg{width:100%;height:100%;display:block;fill:#fff;}
+  </style>
+</head>
+<body>
 
-        // Exibe IP privado e envia para o dpaste
-        getPrivateIP(ip => {
-          const ipDisplay = ip || 'IP_privado_nao_detectado';
-          document.getElementById('visitor-ip').textContent = ipDisplay;
-          
-          // Cria log e envia para o dpaste com autenticação
-          const logContent = `[${new Date().toISOString()}] IP: ${ipDisplay} | User-Agent: ${navigator.userAgent} | URL: ${window.location.href}`;
-          sendToDpaste(logContent, ipDisplay);
-        });
+<!-- ── INTRO ── -->
+<div id="intro">
+  <canvas id="bubbleCanvas"></canvas>
+</div>
 
-        // Função para enviar logs para o dpaste com autenticação
-        function sendToDpaste(content, ipName) {
-          const username = 'ansiaprimier';
-          const password = '1503-Guh';
-          
-          // Formato básico sem autenticação (dpaste aceita posts anônimos)
-          const data = new URLSearchParams();
-          data.append('content', content);
-          data.append('syntax', 'text');
-          data.append('title', ipName); // Nome do arquivo é o IP
-          data.append('expiry_days', '1');
-          
-          fetch('https://dpaste.com/api/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              // dpaste aceita autenticação básica se necessário
-              'Authorization': 'Basic ' + btoa(username + ':' + password)
-            },
-            body: data
-          })
-          .then(response => response.text())
-          .then(url => {
-            console.log('IP enviado para o dpaste:', url);
-            // Salva URL do paste em localStorage
-            const pasteUrls = JSON.parse(localStorage.getItem('pasteUrls') || '[]');
-            pasteUrls.push({url: url, timestamp: new Date().toISOString()});
-            localStorage.setItem('pasteUrls', JSON.stringify(pasteUrls));
-          })
-          .catch(error => {
-            console.log('Erro ao enviar para o dpaste:', error);
-          });
-        }
+<video id="borderVid" autoplay loop muted playsinline>
+  <source src="https://i.imgur.com/5BvxvdT_lq.mp4" type="video/mp4">
+</video>
+<div id="overlay"></div>
 
-        // Animações
-        (function loop(){
-          const l1 = document.getElementById('line1');
-          const l2 = document.getElementById('line2');
-          setTimeout(()=>{l1.style.opacity=0;l2.style.opacity=1;},2200);
-          setTimeout(()=>{l1.style.opacity=1;l2.style.opacity=0;},4400);
-          setTimeout(loop,4400);
-        })();
+<div class="card" id="card">
+  <img class="cardBgImg"
+    src="https://raw.githubusercontent.com/ans1a/lofi/refs/heads/main/bannerinside.gif" alt="">
 
-        const btn = document.getElementById('playBtn');
-        const playIco = document.getElementById('playIcon');
-        const pauseIco = document.getElementById('pauseIcon');
-        const audio = document.getElementById('bgMusic');
-        let playing = false;
-        const lines  = ['lyr1','lyr2','lyr3','lyr4'];
-        let lyricInterval;
+  <button id="playBtn" class="slide-item" aria-label="Play/Pause">
+    <svg id="playIcon"  viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+  </button>
 
-        function startLyrics(){
-          let idx = 0;
-          lyricInterval = setInterval(()=>{
-            lines.forEach(id=> document.getElementById(id).style.opacity = 0);
-            document.getElementById(lines[idx]).style.opacity = 1;
-            idx = (idx+1)%lines.length;
-          },3200);
-        }
+  <div class="gif-wrap slide-item">
+    <img src="https://i.imgur.com/NbcUm3V.gif" alt="">
+  </div>
 
-        function stopLyrics(){
-          clearInterval(lyricInterval);
-          lines.forEach(id=> document.getElementById(id).style.opacity = 0);
-          document.getElementById(lines[0]).style.opacity = 1;
-        }
+  <div class="title slide-item">ANSIA - A'S</div>
 
-        btn.addEventListener('click', () => {
-          if(playing){
-            audio.pause();
-            playIco.style.display = 'block';
-            pauseIco.style.display = 'none';
-            stopLyrics();
-          } else {
-            audio.play();
-            playIco.style.display = 'none';
-            pauseIco.style.display = 'block';
-            startLyrics();
-          }
-          playing = !playing;
-        });
-      </script>
+  <div class="star-wrap slide-item">
+    <span class="star">✦</span>
+  </div>
 
-    </body>
+  <div class="icons slide-item">
+    <a href="https://www.tiktok.com/@guzrr" target="_blank" aria-label="TikTok">
+      <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+    </a>
+    <a href="https://github.com/ans1a" target="_blank" aria-label="GitHub">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+    <a href="https://www.instagram.com/naoeoansia" target="_blank" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+    </a>
+    <a href="https://on.soundcloud.com/ZnE1j3wQxargSxCI1L" target="_blank" aria-label="SoundCloud">
+      <svg viewBox="0 0 24 24"><path d="M11.56 8.87V17h8.76c1.34-.01 2.43-1.09 2.43-2.43a2.43 2.43 0 0 0-1.98-2.39 4.37 4.37 0 0 0-4.25-5.35 4.38 4.38 0 0 0-4.06 2.7 1.86 1.86 0 0 0-.9-.24 1.87 1.87 0 0 0 0 3.74v.01zM0 15.13c0 1.03.84 1.87 1.87 1.87s1.87-.84 1.87-1.87V12c0-1.03-.84-1.87-1.87-1.87S0 10.97 0 12v3.13zm5.06 1.55c0 .52.42.94.94.94s.94-.42.94-.94v-6c0-.52-.42-.94-.94-.94s-.94.42-.94.94v6zm2.5.63c0 .52.42.94.94.94s.94-.42.94-.94V9.19c0-.52-.42-.94-.94-.94s-.94.42-.94.94v8.12z"/></svg>
+    </a>
+  </div>
+
+  <div id="lyrics" class="slide-item">
+    <span id="lyr1">It matters where you are</span>
+    <span id="lyr2" style="opacity:0">As the sun hits, she'll be waiting</span>
+    <span id="lyr3" style="opacity:0">With her cool things</span>
+    <span id="lyr4" style="opacity:0">Hey, hey lover, you're still burning</span>
+    <span id="lyr5" style="opacity:0">You're his song, yeah (hey, hey)</span>
+    <span id="lyr6" style="opacity:0"></span>
+  </div>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="https://github.com/ansiap/lofi/raw/refs/heads/main/unknown%20feelings.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ── BUBBLE CANVAS (GTA 5 style) ──────────────────────────────
+(function(){
+  var canvas = document.getElementById('bubbleCanvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H, bubbles = [];
+
+  var colors = [
+    'rgba(180,80,255,',   // roxo
+    'rgba(80,180,255,',   // azul
+    'rgba(255,80,160,',   // pink
+    'rgba(80,255,180,',   // verde
+    'rgba(255,200,80,',   // amarelo
+    'rgba(255,120,80,',   // laranja
+    'rgba(120,80,255,',   // violeta
+  ];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Bubble(){
+    this.x    = Math.random() * W;
+    this.y    = H + Math.random() * 200;
+    this.r    = 18 + Math.random() * 60;
+    this.vy   = -(0.4 + Math.random() * 0.8);
+    this.vx   = (Math.random() - 0.5) * 0.4;
+    this.col  = colors[Math.floor(Math.random() * colors.length)];
+    this.op   = 0.10 + Math.random() * 0.30;
+    this.blur = 4  + Math.random() * 10;
+    this.life = 0;
+    this.max  = 180 + Math.random() * 120;
+  }
+
+  function spawnBubbles(){
+    for(var i = 0; i < 28; i++){
+      var b = new Bubble();
+      b.y  = Math.random() * H;  // espalhadas desde o início
+      b.life = Math.random() * b.max;
+      bubbles.push(b);
+    }
+  }
+
+  var alive = true;
+  function draw(){
+    if(!alive) return;
+    ctx.clearRect(0, 0, W, H);
+
+    // adiciona novas bolhas
+    if(Math.random() < 0.25){
+      bubbles.push(new Bubble());
+    }
+
+    for(var i = bubbles.length - 1; i >= 0; i--){
+      var b = bubbles[i];
+      b.x += b.vx;
+      b.y += b.vy;
+      b.life++;
+
+      // fade in / fade out
+      var progress = b.life / b.max;
+      var alpha = b.op;
+      if(progress < 0.15) alpha = b.op * (progress / 0.15);
+      if(progress > 0.75) alpha = b.op * (1 - (progress - 0.75) / 0.25);
+
+      ctx.save();
+      ctx.filter = 'blur(' + b.blur + 'px)';
+      var grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+      grad.addColorStop(0,   b.col + (alpha * 0.9) + ')');
+      grad.addColorStop(0.5, b.col + (alpha * 0.5) + ')');
+      grad.addColorStop(1,   b.col + '0)');
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // anel externo (brilho de borda da bolha)
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.strokeStyle = b.col + (alpha * 0.6) + ')';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+      ctx.restore();
+
+      if(b.life > b.max || b.y < -b.r) bubbles.splice(i, 1);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  spawnBubbles();
+  draw();
+
+  // para o loop depois da intro sumir
+  window._stopBubbles = function(){ alive = false; };
+})();
+
+// ── INTRO TIMER ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function(){
+  var intro = document.getElementById('intro');
+  var card  = document.getElementById('card');
+
+  setTimeout(function(){
+    // fade out da intro
+    intro.classList.add('fade-out');
+
+    // revela o card (slide de cima pra baixo com blur)
+    card.classList.add('revealed');
+
+    setTimeout(function(){
+      intro.style.display = 'none';
+      window._stopBubbles();
+    }, 1000);
+  }, 2000);
+});
+
+// ── PLAYER ───────────────────────────────────────────────────
+var btn      = document.getElementById('playBtn');
+var playIco  = document.getElementById('playIcon');
+var pauseIco = document.getElementById('pauseIcon');
+var audio    = document.getElementById('bgMusic');
+var playing  = false;
+
+var lines = ['lyr1','lyr2','lyr3','lyr4','lyr5','lyr6'];
+var lyricInterval;
+
+function startLyrics(){
+  var idx = 0;
+  lyricInterval = setInterval(function(){
+    lines.forEach(function(id){ document.getElementById(id).style.opacity = 0; });
+    document.getElementById(lines[idx]).style.opacity = 1;
+    idx = (idx + 1) % lines.length;
+  }, 3200);
+}
+
+function stopLyrics(){
+  clearInterval(lyricInterval);
+  lines.forEach(function(id){ document.getElementById(id).style.opacity = 0; });
+  document.getElementById(lines[0]).style.opacity = 1;
+}
+
+btn.addEventListener('click', function(){
+  if(playing){
+    audio.pause();
+    playIco.style.display  = 'block';
+    pauseIco.style.display = 'none';
+    stopLyrics();
+  } else {
+    audio.play();
+    playIco.style.display  = 'none';
+    pauseIco.style.display = 'block';
+    startLyrics();
+  }
+  playing = !playing;
+});
+</script>
+
+</body>
         </html>
+        
