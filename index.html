@@ -114,7 +114,7 @@
     }
 
     /* ── GLOW ANIM ── */
-    .title,.icons a svg,#lyrics{
+    .icons a svg,#lyrics{
       animation:glowWhite 2.5s ease-in-out infinite;
     }
     @keyframes glowWhite{
@@ -123,22 +123,58 @@
       100%{color:#fff;text-shadow:var(--glow) #fff;fill:#fff;filter:drop-shadow(0 0 4px #fff);}
     }
 
-    .title{font-size:15px;font-weight:700;letter-spacing:.5px;margin-bottom:10px;}
+    .title-wrap{position:relative;display:inline-block;margin-bottom:10px;}
+    .title{
+      font-size:15px;font-weight:700;letter-spacing:.5px;
+      background:linear-gradient(90deg,#ffffff,#aaaaaa,#555555,#000000,#555555,#aaaaaa,#ffffff,#ffffff);
+      background-size:200% auto;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      animation:rainbowShift 4s linear infinite, glowRainbow 4s linear infinite;
+      filter:none;
+    }
+    @keyframes rainbowShift{
+      0%  {background-position:0%   center;}
+      100%{background-position:200% center;}
+    }
+    @keyframes glowRainbow{
+      0%  {filter:drop-shadow(0 0 7px #fff);}
+      25% {filter:drop-shadow(0 0 4px #888);}
+      50% {filter:drop-shadow(0 0 2px #222);}
+      75% {filter:drop-shadow(0 0 4px #888);}
+      100%{filter:drop-shadow(0 0 7px #fff);}
+    }
+    #sparkleCanvas{
+      position:absolute;
+      top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      width:260px;height:80px;
+      pointer-events:none;
+      z-index:5;
+    }
 
     .star-wrap{
       display:flex;justify-content:center;align-items:center;
       margin-bottom:14px;height:28px;
     }
     .star{
-      font-size:20px;line-height:1;color:#fff;
-      animation:spinStar 4s linear infinite,glowStar 2.5s ease-in-out infinite;
+      font-size:20px;line-height:1;
       display:inline-block;transform-origin:center;
+      background:linear-gradient(90deg,#ffffff,#aaaaaa,#555555,#000000,#555555,#aaaaaa,#ffffff,#ffffff);
+      background-size:200% auto;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      animation:spinStar 3s linear infinite, rainbowShift 4s linear infinite, glowStarRainbow 4s linear infinite;
     }
     @keyframes spinStar{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-    @keyframes glowStar{
-      0%  {text-shadow:0 0 6px #fff,0 0 12px #fff;}
-      50% {text-shadow:0 0 18px #fff,0 0 36px #fff,0 0 60px #fff;}
-      100%{text-shadow:0 0 6px #fff,0 0 12px #fff;}
+    @keyframes glowStarRainbow{
+      0%  {filter:drop-shadow(0 0 6px #fff);}
+      25% {filter:drop-shadow(0 0 4px #888);}
+      50% {filter:drop-shadow(0 0 2px #222);}
+      75% {filter:drop-shadow(0 0 4px #888);}
+      100%{filter:drop-shadow(0 0 6px #fff);}
     }
 
     /* ── ICONS ── */
@@ -189,7 +225,10 @@
   <!-- Content below the floating profile pic -->
   <div class="card-body">
 
-    <div class="title slide-item">ANSIA - A'S</div>
+    <div class="title-wrap slide-item">
+      <canvas id="sparkleCanvas"></canvas>
+      <div class="title">ANSIA - A'S</div>
+    </div>
 
     <div class="star-wrap slide-item">
       <span class="star">✦</span>
@@ -329,6 +368,77 @@ window.addEventListener('DOMContentLoaded', function(){
     setTimeout(function(){ intro.style.display='none'; window._stopStars(); }, 1000);
   }, 2800);
 });
+
+/* ── RAINBOW SPARKLES ── */
+(function(){
+  var sc = document.getElementById('sparkleCanvas');
+  if(!sc) return;
+  var ctx = sc.getContext('2d');
+  var W = sc.width  = 260;
+  var H = sc.height = 80;
+  var sparks = [];
+  var CYCLE = 4000; // ms — must match rainbowShift duration
+  var COLORS = ['#ffffff','#cccccc','#999999','#555555','#222222','#555555','#cccccc'];
+
+  function rainbowColor(offset){
+    // offset 0..1 shifts phase, returns current rainbow color in sync with CSS
+    var t = ((Date.now() % CYCLE) / CYCLE + offset) % 1;
+    var idx = t * COLORS.length;
+    var i0  = Math.floor(idx) % COLORS.length;
+    return COLORS[i0];
+  }
+
+  function Spark(){
+    var angle = Math.random() * Math.PI * 2;
+    var r = 28 + Math.random() * 55;
+    this.x      = W/2 + Math.cos(angle) * r;
+    this.y      = H/2 + Math.sin(angle) * r * 0.42;
+    this.vx     = (Math.random()-0.5)*1.1;
+    this.vy     = (Math.random()-0.5)*1.1;
+    this.size   = 1.8 + Math.random()*2.8;
+    this.alpha  = 0.75 + Math.random()*0.25;
+    this.decay  = 0.011 + Math.random()*0.016;
+    this.rot    = Math.random()*Math.PI;
+    this.rotV   = (Math.random()-0.5)*0.16;
+    this.phase  = Math.random(); // individual color phase offset
+  }
+
+  function drawStar(x,y,size,rot,alpha,color){
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = 8;
+    ctx.fillStyle   = color;
+    ctx.beginPath();
+    for(var i=0;i<4;i++){
+      var a  = i*Math.PI/2;
+      var r1 = size, r2 = size*0.28;
+      ctx.lineTo(Math.cos(a)*r1,          Math.sin(a)*r1);
+      ctx.lineTo(Math.cos(a+Math.PI/4)*r2, Math.sin(a+Math.PI/4)*r2);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    if(sparks.length < 24) sparks.push(new Spark());
+    for(var i=sparks.length-1;i>=0;i--){
+      var s = sparks[i];
+      s.x    += s.vx;
+      s.y    += s.vy;
+      s.alpha -= s.decay;
+      s.rot   += s.rotV;
+      if(s.alpha<=0){ sparks.splice(i,1); continue; }
+      drawStar(s.x, s.y, s.size, s.rot, s.alpha, rainbowColor(s.phase));
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 
 /* ── PLAYER ── */
 var btn=document.getElementById('playBtn'),
