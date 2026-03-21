@@ -94,6 +94,43 @@
       animation:glowWhite 2.5s ease-in-out infinite;
     }
 
+    /* ── AUDIO CONTROLS ── */
+    #audioControls{
+      position:absolute;top:10px;left:44px;right:12px;z-index:20;
+      display:flex;align-items:center;gap:8px;
+      opacity:0;pointer-events:none;
+      transition:opacity .3s ease;
+    }
+    #audioControls.visible{
+      opacity:.5;pointer-events:auto;
+    }
+    #volPct{
+      font-size:9px;font-weight:800;color:rgba(255,255,255,.7);
+      min-width:28px;text-align:right;letter-spacing:.3px;
+      font-family:-apple-system,'SF Pro Display',sans-serif;
+    }
+    #volTrack{
+      flex:1;height:3px;border-radius:2px;
+      background:rgba(255,255,255,.18);
+      position:relative;cursor:pointer;
+      touch-action:none;
+    }
+    #volFill{
+      height:100%;border-radius:2px;
+      background:rgba(255,255,255,.85);
+      width:100%;
+      transition:width .05s;
+      pointer-events:none;
+    }
+    #volHandle{
+      position:absolute;top:50%;right:0;
+      width:10px;height:10px;border-radius:50%;
+      background:#fff;
+      transform:translate(50%,-50%);
+      box-shadow:0 0 6px rgba(255,255,255,.5);
+      pointer-events:none;
+    }
+
     /* ── PROFILE PIC ── */
     .gif-wrap{
       width:108px;height:108px;border-radius:50%;overflow:hidden;
@@ -354,6 +391,13 @@
       <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
     </button>
+    <div id="audioControls">
+      <span id="volPct">100%</span>
+      <div id="volTrack">
+        <div id="volFill"></div>
+        <div id="volHandle"></div>
+      </div>
+    </div>
     <img src="https://raw.githubusercontent.com/ans1a/lofi/refs/heads/main/bgs.gif" alt="">
   </div>
 
@@ -718,53 +762,109 @@ var DISCORD_ID = '1422064240902013009';
   var playIco  = document.getElementById('playIcon');
   var pauseIco = document.getElementById('pauseIcon');
   var audio    = document.getElementById('bgMusic');
-  var playing  = false;
+  var volTrack = document.getElementById('volTrack');
+  var volFill  = document.getElementById('volFill');
+  var volHandle= document.getElementById('volHandle');
+  var volPct   = document.getElementById('volPct');
   var LINES    = ['lyr1','lyr2','lyr3','lyr4'];
   var timer    = null;
-  var cur      = -1;
+  var dragging = false;
 
+  /* ── sync icon com estado real do audio ── */
+  function syncIcon(){
+    var paused = audio.paused;
+    playIco.style.display  = paused  ? 'block' : 'none';
+    pauseIco.style.display = !paused ? 'block' : 'none';
+  }
+
+  audio.addEventListener('play',  function(){ syncIcon(); document.getElementById('audioControls').classList.add('visible'); });
+  audio.addEventListener('pause', function(){ syncIcon(); document.getElementById('audioControls').classList.remove('visible'); });
+  audio.addEventListener('ended', function(){ syncIcon(); document.getElementById('audioControls').classList.remove('visible'); });
+
+  /* ── play/pause ── */
+  btn.addEventListener('click', function(){
+    if(audio.paused){
+      var p = audio.play();
+      if(p && p.catch) p.catch(function(){});
+      startLyrics();
+    } else {
+      audio.pause();
+      stopLyrics();
+    }
+  });
+
+  /* ── volume ── */
+  function setVolume(ratio){
+    ratio = Math.max(0, Math.min(1, ratio));
+    audio.volume = ratio;
+    var pct = Math.round(ratio * 100);
+    volFill.style.width   = pct + '%';
+    volHandle.style.left  = pct + '%';
+    volPct.textContent    = pct + '%';
+  }
+
+  function ratioFromEvent(e){
+    var rect = volTrack.getBoundingClientRect();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    return (clientX - rect.left) / rect.width;
+  }
+
+  /* mouse */
+  volTrack.addEventListener('mousedown', function(e){
+    dragging = true;
+    setVolume(ratioFromEvent(e));
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e){
+    if(dragging) setVolume(ratioFromEvent(e));
+  });
+  document.addEventListener('mouseup', function(){
+    dragging = false;
+  });
+
+  /* touch */
+  volTrack.addEventListener('touchstart', function(e){
+    dragging = true;
+    setVolume(ratioFromEvent(e));
+    e.preventDefault();
+  }, {passive:false});
+  document.addEventListener('touchmove', function(e){
+    if(dragging) setVolume(ratioFromEvent(e));
+  }, {passive:true});
+  document.addEventListener('touchend', function(){
+    dragging = false;
+  });
+
+  /* init volume a 100% */
+  setVolume(1);
+
+  /* ── lyrics ── */
   function showLine(idx){
     LINES.forEach(function(id,i){
-      document.getElementById(id).style.opacity = (i===idx) ? '1' : '0';
+      var el = document.getElementById(id);
+      if(el) el.style.opacity = (i===idx) ? '1' : '0';
     });
-    cur = idx;
   }
-
   function hideAll(){
-    LINES.forEach(function(id){ document.getElementById(id).style.opacity='0'; });
-    cur = -1;
+    LINES.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.opacity = '0';
+    });
   }
-
   function startLyrics(){
     clearInterval(timer);
-    showLine(0);            /* lyr1 aparece imediatamente */
+    showLine(0);
     var next = 1;
     timer = setInterval(function(){
       showLine(next);
       next = (next + 1) % LINES.length;
     }, 2500);
   }
-
   function stopLyrics(){
     clearInterval(timer);
     timer = null;
     hideAll();
   }
-
-  btn.addEventListener('click', function(){
-    if(playing){
-      audio.pause();
-      playIco.style.display  = 'block';
-      pauseIco.style.display = 'none';
-      stopLyrics();
-    } else {
-      audio.play();
-      playIco.style.display  = 'none';
-      pauseIco.style.display = 'block';
-      startLyrics();
-    }
-    playing = !playing;
-  });
 })();
 /* ── LAST.FM NOW PLAYING ── */
 (function(){
