@@ -193,12 +193,6 @@
     }
 
     /* Play / volume controls pinned top-left of hero */
-    #playBtn {
-      position:absolute; top:12px; left:14px; z-index:20;
-      width:26px; height:26px; cursor:pointer;
-      background:transparent; border:none; outline:none; padding:0;
-    }
-    #playBtn svg { width:100%; height:100%; display:block; fill:#fff; animation:glowWhite 2.5s ease-in-out infinite; }
     #audioControls {
       position:absolute; top:14px; left:46px; right:14px; z-index:20;
       display:flex; align-items:center; gap:7px;
@@ -226,7 +220,19 @@
     }
     #heroRotTxt { display:block; }
 
-    /* Last.fm mini-player — TOP CENTER */
+    /* Last.fm mini-player — standalone (below hero) */
+    .lfm-hero-card.lfm-standalone {
+      position: static !important;
+      transform: none !important;
+      left: auto !important; top: auto !important;
+      width: 100% !important;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .lfm-hero-card.lfm-standalone:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 28px rgba(199,36,255,.18);
+    }
+    /* Last.fm mini-player — original absolute (kept for possible reuse) */
     .lfm-hero-card {
       position:absolute; top:12px; left:50%; transform:translateX(-50%);
       z-index:15; width:230px;
@@ -362,16 +368,18 @@
       transition:background .2s, transform .2s, border-color .2s;
       cursor:pointer;
     }
-    /* Colored accent top-border per platform */
+    /* Colored accent top-border per platform — animated */
     .scard::before {
       content:''; position:absolute; top:0; left:0; right:0; height:2px;
       border-radius:14px 14px 0 0; opacity:.65; transition:opacity .2s;
+      background-size: 200% auto;
+      animation: rainbowShift 4s linear infinite;
     }
     .scard:hover::before { opacity:1; }
-    .scard.tiktok::before { background:var(--tiktok); box-shadow:0 0 10px var(--tiktok); }
-    .scard.github::before { background:var(--github); box-shadow:0 0 10px var(--github); }
-    .scard.insta::before  { background:var(--insta);  box-shadow:0 0 10px var(--insta);  }
-    .scard.lastfm::before { background:var(--lastfm); box-shadow:0 0 10px var(--lastfm); }
+    .scard.tiktok::before { background: linear-gradient(90deg,#00F2A0,#fff,#00F2A0,#88ffe0,#00F2A0); background-size:200% auto; box-shadow:0 0 10px #00F2A0; animation: rainbowShift 3s linear infinite; }
+    .scard.github::before { background: linear-gradient(90deg,#FF2D55,#fff,#FF2D55,#ff8fa8,#FF2D55); background-size:200% auto; box-shadow:0 0 10px #FF2D55; animation: rainbowShift 3s linear infinite; }
+    .scard.insta::before  { background: linear-gradient(90deg,#00A2FF,#fff,#00A2FF,#88d4ff,#00A2FF); background-size:200% auto; box-shadow:0 0 10px #00A2FF; animation: rainbowShift 3s linear infinite; }
+    .scard.lastfm::before { background: linear-gradient(90deg,#C724FF,#fff,#C724FF,#e088ff,#C724FF); background-size:200% auto; box-shadow:0 0 10px #C724FF; animation: rainbowShift 3s linear infinite; }
     .scard.tiktok:hover { background:rgba(0,242,160,.05);  border-color:rgba(0,242,160,.16);  transform:translateY(-2px); }
     .scard.github:hover { background:rgba(255,45,85,.05);  border-color:rgba(255,45,85,.16);  transform:translateY(-2px); }
     .scard.insta:hover  { background:rgba(0,162,255,.05);  border-color:rgba(0,162,255,.16);  transform:translateY(-2px); }
@@ -580,6 +588,137 @@
       .lfm-hero-card { width:calc(100% - 40px); }
       .hero-text { max-width:140px; }
     }
+
+    /* ══ UNIVERSAL RAINBOW TEXT ══ */
+    .scard-name, .scard-sub, .lfm-h-track, .lfm-h-artist,
+    .lfm-h-uname, .lfm-h-scr, .tc-title, .dc-name,
+    .perf-nums > span:first-child, .nav-user-name, .tc-badge,
+    .lfm-badge-label, .lfm-h-label {
+      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: rainbowShift 4s linear infinite;
+    }
+    .nav-brand { animation: rainbowShift 4s linear infinite; }
+    .lfm-badge-label { color: unset; }
+    .lfm-h-label { color: unset; }
+
+    /* ══ MUSIC MODAL ══ */
+    .lfm-modal-overlay {
+      position: fixed; inset: 0; z-index: 600;
+      backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .lfm-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .lfm-modal-card {
+      position: relative;
+      background: rgba(8,8,8,0.85);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 22px 18px 18px;
+      width: 340px; max-width: 92vw;
+      backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .lfm-modal-close {
+      position: absolute; top: 12px; right: 14px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer; color: rgba(255,255,255,0.6);
+      font-size: 13px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .lfm-modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    .lfm-modal-header {
+      display: flex; align-items: center; gap: 7px;
+      margin-bottom: 4px;
+    }
+    .lfm-modal-title {
+      font-size: 8px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
+      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: rainbowShift 4s linear infinite;
+    }
+
+    .lfm-modal-row {
+      display: flex; align-items: center; gap: 11px;
+      padding: 11px 14px;
+      border: 1.5px solid rgba(255,255,255,0.10);
+      border-radius: 50px;
+      background: rgba(255,255,255,0.03);
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      position: relative; overflow: hidden;
+    }
+    .lfm-modal-row:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.22);
+      transform: translateX(2px);
+    }
+    .lfm-modal-row::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0); transition: background 0.2s;
+      border-radius: 50px;
+    }
+
+    .lfm-modal-ic {
+      width: 26px; height: 26px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lfm-modal-ic svg { width: 22px; height: 22px; fill: rgba(255,255,255,0.75); }
+
+    .lfm-modal-artist {
+      font-size: 11px; font-weight: 800; flex-shrink: 0; white-space: nowrap;
+      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: rainbowShift 4s linear infinite;
+    }
+
+    .lfm-modal-track {
+      font-size: 11px; font-weight: 700;
+      margin-left: auto; text-align: right; flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      background: linear-gradient(90deg,#C724FF,#d44fff,#a020d0,#7a0099,#C724FF,#d44fff,#C724FF);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: rainbowShift 4s linear infinite reverse;
+    }
+
+    /* ══ SECT TAB BUTTONS ══ */
+    .sect-tab {
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 8px;
+      transition: background .15s;
+      padding: 0;
+    }
+    .sect-tab svg { width: 15px; height: 15px; fill: var(--text-dim); transition: fill .15s; animation: glowWhite 2.5s ease-in-out infinite; }
+    .sect-tab:hover svg, .sect-tab.active svg { fill: #fff; }
+    .sect-tab.active { background: rgba(255,255,255,.10); }
+
+    /* ══ EXTRA SIGILS ══ */
+    .sigil-wrap { position: relative; width: 100%; }
+    .sigil-extra {
+      width: 42px; height: auto; display: block;
+      mix-blend-mode: screen; transform-style: preserve-3d;
+      filter: invert(1) brightness(30) drop-shadow(0 0 3px #fff);
+      position: absolute; top: 50%; transform: translateY(-50%);
+      animation: sigilPulse 2.5s ease-in-out infinite;
+    }
+    .sigil-extra.s1 { left: 0;   animation: spinY 4.4s linear infinite reverse, sigilPulse 2.8s ease-in-out infinite; }
+    .sigil-extra.s2 { left: 18px; animation: spinY 3.2s linear infinite, sigilPulse 2.2s ease-in-out infinite 0.4s; opacity:.7; }
+    .sigil-extra.s3 { right: 0;  animation: spinY 5s linear infinite, sigilPulse 3s ease-in-out infinite 0.8s; }
+    .sigil-extra.s4 { right: 18px; animation: spinY 3.8s linear infinite reverse, sigilPulse 2.5s ease-in-out infinite 1.2s; opacity:.7; }
+
   </style>
 </head>
 <body>
@@ -632,37 +771,11 @@
       <img class="hero-bg" src="https://raw.githubusercontent.com/ans1a/lofi/refs/heads/main/bgs.gif" alt="" loading="lazy">
       <div class="hero-overlay-fade"></div>
 
-      <!-- Audio player controls (top-left) -->
-      <button id="playBtn" aria-label="Play/Pause">
-        <svg id="playIcon"  viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </button>
-      <div id="audioControls">
+      <!-- Audio volume controls (top-left) -->
+      <div id="audioControls" style="left:14px">
         <span id="volPct">100%</span>
         <div id="volTrack"><div id="volFill"></div><div id="volHandle"></div></div>
       </div>
-
-
-      <!-- Last.fm mini-player — TOP CENTER (the yellow-circled area from print 1) -->
-      <div class="lfm-hero-card">
-        <div class="lfm-h-row">
-          <img class="lfm-h-art" id="lfm-h-art" src="" alt="">
-          <div class="lfm-h-info">
-            <div class="lfm-h-track"  id="lfm-h-track">—</div>
-            <div class="lfm-h-artist" id="lfm-h-artist">conectando...</div>
-          </div>
-          <div class="lfm-h-badge">
-            <div class="lfm-h-dot idle" id="lfm-h-dot"></div>
-            <div class="lfm-h-label idle" id="lfm-h-label">LAST</div>
-          </div>
-        </div>
-        <div class="lfm-h-foot">
-          <img class="lfm-h-av" id="lfm-h-av" src="" alt="">
-          <span class="lfm-h-uname" id="lfm-h-uname">guzrr</span>
-          <span class="lfm-h-scr" id="lfm-h-scr"></span>
-        </div>
-      </div>
-
 
 
       <!-- Title strip + sparkles — bottom-right overlay -->
@@ -676,26 +789,49 @@
 
     </section>
 
+    <!-- LAST.FM MINI-PLAYER — standalone clickable card -->
+    <div class="lfm-hero-card lfm-standalone" onclick="openLfmModal()" style="cursor:pointer" title="Ver onde ouvir">
+      <div class="lfm-h-row">
+        <img class="lfm-h-art" id="lfm-h-art" src="" alt="">
+        <div class="lfm-h-info">
+          <div class="lfm-h-track"  id="lfm-h-track">—</div>
+          <div class="lfm-h-artist" id="lfm-h-artist">conectando...</div>
+        </div>
+        <div class="lfm-h-badge">
+          <div class="lfm-h-dot idle" id="lfm-h-dot"></div>
+          <div class="lfm-h-label idle" id="lfm-h-label">LAST</div>
+        </div>
+      </div>
+      <div class="lfm-h-foot">
+        <img class="lfm-h-av" id="lfm-h-av" src="" alt="">
+        <span class="lfm-h-uname" id="lfm-h-uname">guzrr</span>
+        <span class="lfm-h-scr" id="lfm-h-scr"></span>
+      </div>
+    </div>
+
     <!-- BOTTOM SECTION: lyrics + 4 social cards -->
     <section class="bottom-section" style="padding:14px 14px 16px; background:rgba(6,6,6,0.45); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); backdrop-filter:blur(50px); -webkit-backdrop-filter:blur(50px)">
 
       <div class="sect-header">
         <span class="sect-title" id="timeOfDayLabel">Daily</span>
         <span class="sect-badge" id="timeOfDayBadge">summary</span>
-        <!-- Icon row (right side of header) -->
+        <!-- Icon row (right side of header) — TAB selectors -->
         <div class="sect-icons">
-          <a href="https://www.tiktok.com/@due1o"  target="_blank" rel="noopener" aria-label="TikTok">
+          <button class="sect-tab active" data-tab="all" aria-label="Todos" onclick="switchTab('all',this)">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+          </button>
+          <button class="sect-tab" data-tab="tiktok" aria-label="TikTok" onclick="switchTab('tiktok',this)">
             <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
-          </a>
-          <a href="https://github.com/ans1a" target="_blank" rel="noopener" aria-label="GitHub">
+          </button>
+          <button class="sect-tab" data-tab="github" aria-label="GitHub" onclick="switchTab('github',this)">
             <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          </a>
-          <a href="https://www.instagram.com/ea6ts" target="_blank" rel="noopener" aria-label="Instagram">
+          </button>
+          <button class="sect-tab" data-tab="insta" aria-label="Instagram" onclick="switchTab('insta',this)">
             <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-          </a>
-          <a href="https://www.last.fm/user/guzrr" target="_blank" rel="noopener" aria-label="Last.fm">
+          </button>
+          <button class="sect-tab" data-tab="lastfm" aria-label="Last.fm" onclick="switchTab('lastfm',this)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M289.8 431.1L271 380.1C271 380.1 240.5 414.1 194.8 414.1C154.3 414.1 125.6 378.9 125.6 322.6C125.6 250.5 162 224.7 197.7 224.7C264.2 224.7 272.5 278 298.6 359.6C317.4 416.5 352.6 462.2 454 462.2C526.7 462.2 576 439.9 576 381.3C576 308.4 513.3 300.7 461 289.2C435.2 283.3 427.6 272.8 427.6 255.2C427.6 235.3 443.4 223.5 469.2 223.5C497.4 223.5 512.6 234.1 514.9 259.3L573.5 252.3C568.8 199.5 532.4 177.8 472.6 177.8C419.8 177.8 368.2 197.7 368.2 261.7C368.2 301.6 387.6 326.8 436.2 338.5C481.1 349.1 516 352.3 516 384.2C516 405.9 494.9 414.7 455 414.7C395.8 414.7 371.1 383.6 357.1 340.8C325.1 244 313.5 177.8 195.8 177.8C109.7 177.8 64 232.3 64 325C64 414.1 109.7 462.2 191.9 462.2C258.1 462.2 289.8 431.1 289.8 431.1z"/></svg>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -780,18 +916,6 @@
             <div class="scard-name" id="lfm-username">guzrr</div>
             <div class="scard-sub" id="lfm-scrobbles-count">Last.fm</div>
           </div>
-          <!-- Extended row: album art + track + artist + live dot -->
-          <div class="scard-lfm-extra">
-            <img class="lfm-album-art" id="lfm-art2" src="" alt="">
-            <div class="lfm-track-info">
-              <div class="lfm-track-name"  id="lfm-track2">—</div>
-              <div class="lfm-artist-name" id="lfm-artist2">conectando...</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;">
-              <div class="lfm-dot idle" id="lfm-dot2"></div>
-              <div class="lfm-badge-label idle" id="lfm-label2">LAST</div>
-            </div>
-          </div>
         </a>
 
       </div><!-- /social-cards -->
@@ -853,14 +977,16 @@
     </div>
 
     <!-- 3D spinning sigil + sparkle canvas -->
-    <div class="sigil-card glass">
-      <div class="sigil-wrap">
-        <canvas id="sigilCanvas"></canvas>
-        <div class="sigil-3d">
-          <img src="sigil.jpg" class="sigil-img" alt="sigil">
-        </div>
-      </div>
-    </div>
+<div class="sigil-wrap">
+  <canvas id="sigilCanvas"></canvas>
+  <img src="sigil1.jpg" class="sigil-extra s1" alt="">
+  <img src="sigil2.png" class="sigil-extra s2" alt="">
+  <div class="sigil-3d">
+    <img src="sigil3.jpg" class="sigil-img" alt="sigil">
+  </div>
+  <img src="sigil4.png" class="sigil-extra s3" alt="">
+  <img src="sigil5.jpg" class="sigil-extra s4" alt="">
+</div>
 
     <!-- Performance card: shows Last.fm scrobble count -->
     <div class="perf-card glass">
@@ -876,6 +1002,51 @@
   </aside>
 
 </div><!-- /dashboard -->
+
+<!-- ════════════ MUSIC LINKS MODAL ════════════ -->
+<div id="lfmModal" class="lfm-modal-overlay" onclick="if(event.target===this)closeLfmModal()">
+  <div class="lfm-modal-card">
+    <button class="lfm-modal-close" onclick="closeLfmModal()" aria-label="Fechar">✕</button>
+    <div class="lfm-modal-header">
+      <div class="lfm-h-dot idle" id="modal-dot" style="width:8px;height:8px;"></div>
+      <span class="lfm-modal-title" id="modal-now-label">LAST PLAYED</span>
+    </div>
+
+    <!-- Row 1: YouTube Music -->
+    <a id="lfm-yt-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
+      <div class="lfm-modal-ic">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+          <path d="M 25 3 C 12.85 3 3 12.85 3 25 C 3 37.15 12.85 47 25 47 C 37.15 47 47 37.15 47 25 C 47 12.85 37.15 3 25 3 z M 25 11 C 32.72 11 39 17.28 39 25 C 39 32.72 32.72 39 25 39 C 17.28 39 11 32.72 11 25 C 11 17.28 17.28 11 25 11 z M 25 13 C 18.383 13 13 18.383 13 25 C 13 31.617 18.383 37 25 37 C 31.617 37 37 31.617 37 25 C 37 18.383 31.617 13 25 13 z M 22.019531 18.501953 C 22.194031 18.505203 22.366984 18.552484 22.521484 18.646484 L 31.521484 24.146484 C 31.817484 24.327484 32 24.651 32 25 C 32 25.349 31.818484 25.671516 31.521484 25.853516 L 22.521484 31.353516 C 22.361484 31.450516 22.181 31.5 22 31.5 C 21.832 31.5 21.663719 31.456094 21.511719 31.371094 C 21.195719 31.194094 21 30.861 21 30.5 L 21 19.5 C 21 19.139 21.195719 18.805906 21.511719 18.628906 C 21.670219 18.540906 21.845031 18.498703 22.019531 18.501953 z"/>
+        </svg>
+      </div>
+      <span class="lfm-modal-artist" id="modal-artist1">—</span>
+      <span class="lfm-modal-track" id="modal-track1">—</span>
+    </a>
+
+    <!-- Row 2: Spotify -->
+    <a id="lfm-sp-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
+      <div class="lfm-modal-ic">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+          <path d="M25.009,1.982C12.322,1.982,2,12.304,2,24.991S12.322,48,25.009,48s23.009-10.321,23.009-23.009S37.696,1.982,25.009,1.982z M34.748,35.333c-0.289,0.434-0.765,0.668-1.25,0.668c-0.286,0-0.575-0.081-0.831-0.252C30.194,34.1,26,33,22.5,33.001 c-3.714,0.002-6.498,0.914-6.526,0.923c-0.784,0.266-1.635-0.162-1.897-0.948s0.163-1.636,0.949-1.897 c0.132-0.044,3.279-1.075,7.474-1.077C26,30,30.868,30.944,34.332,33.253C35.022,33.713,35.208,34.644,34.748,35.333z M37.74,29.193 c-0.325,0.522-0.886,0.809-1.459,0.809c-0.31,0-0.624-0.083-0.906-0.26c-4.484-2.794-9.092-3.385-13.062-3.35 c-4.482,0.04-8.066,0.895-8.127,0.913c-0.907,0.258-1.861-0.272-2.12-1.183c-0.259-0.913,0.272-1.862,1.184-2.12 c0.277-0.079,3.854-0.959,8.751-1c4.465-0.037,10.029,0.61,15.191,3.826C37.995,27.328,38.242,28.388,37.74,29.193z M40.725,22.013 C40.352,22.647,39.684,23,38.998,23c-0.344,0-0.692-0.089-1.011-0.275c-5.226-3.068-11.58-3.719-15.99-3.725 c-0.021,0-0.042,0-0.063,0c-5.333,0-9.44,0.938-9.481,0.948c-1.078,0.247-2.151-0.419-2.401-1.495 c-0.25-1.075,0.417-2.149,1.492-2.4C11.729,16.01,16.117,15,21.934,15c0.023,0,0.046,0,0.069,0 c4.905,0.007,12.011,0.753,18.01,4.275C40.965,19.835,41.284,21.061,40.725,22.013z"/>
+        </svg>
+      </div>
+      <span class="lfm-modal-artist" id="modal-artist2">—</span>
+      <span class="lfm-modal-track" id="modal-track2">—</span>
+    </a>
+
+    <!-- Row 3: SoundCloud -->
+    <a id="lfm-sc-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
+      <div class="lfm-modal-ic" style="width:34px">
+        <svg fill="currentColor" viewBox="-271 345.8 256 111.2" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:17px">
+          <g><path d="M-238.4,398.1c-0.8,0-1.4,0.6-1.5,1.5l-2.3,28l2.3,27.1c0.1,0.8,0.7,1.5,1.5,1.5c0.8,0,1.4-0.6,1.5-1.5l2.6-27.1l-2.6-28C-237,398.7-237.7,398.1-238.4,398.1z"/><path d="M-228.2,399.9c-0.9,0-1.7,0.7-1.7,1.7l-2.1,26l2.1,27.3c0.1,1,0.8,1.7,1.7,1.7c0.9,0,1.6-0.7,1.7-1.7l2.4-27.3l-2.4-26C-226.6,400.6-227.3,399.9-228.2,399.9z"/><path d="M-258.6,403.5c-0.5,0-1,0.4-1.1,1l-2.5,23l2.5,22.5c0.1,0.6,0.5,1,1.1,1c0.5,0,1-0.4,1.1-1l2.9-22.5l-2.9-23C-257.7,404-258.1,403.5-258.6,403.5z"/><path d="M-268.1,412.3c-0.5,0-1,0.4-1,1l-1.9,14.3l1.9,14c0.1,0.6,0.5,1,1,1s0.9-0.4,1-1l2.2-14l-2.2-14.2C-267.2,412.8-267.6,412.3-268.1,412.3z"/><path d="M-207.5,373.5c-1.2,0-2.1,0.9-2.2,2.1l-1.9,52l1.9,27.2c0.1,1.2,1,2.1,2.2,2.1s2.1-0.9,2.2-2.1l2.1-27.2l-2.1-52C-205.4,374.4-206.4,373.5-207.5,373.5z"/><path d="M-248.6,399c-0.7,0-1.2,0.5-1.3,1.3l-2.4,27.3l2.4,26.3c0.1,0.7,0.6,1.3,1.3,1.3c0.7,0,1.2-0.5,1.3-1.2l2.7-26.3l-2.7-27.3C-247.4,399.6-247.9,399-248.6,399z"/><path d="M-217.9,383.4c-1,0-1.9,0.8-1.9,1.9l-2,42.3l2,27.3c0.1,1.1,0.9,1.9,1.9,1.9s1.9-0.8,1.9-1.9l2.3-27.3l-2.3-42.3C-216,384.2-216.9,383.4-217.9,383.4z"/><path d="M-154.4,359.3c-1.8,0-3.2,1.4-3.2,3.2l-1.2,65l1.2,26.1c0,1.8,1.5,3.2,3.2,3.2c1.8,0,3.2-1.5,3.2-3.2l1.4-26.1l-1.4-65C-151.1,360.8-152.6,359.3-154.4,359.3z"/><path d="M-197.1,368.9c-1.3,0-2.3,1-2.4,2.4l-1.8,56.3l1.8,26.9c0,1.3,1.1,2.3,2.4,2.3s2.3-1,2.4-2.4l2-26.9l-2-56.3C-194.7,370-195.8,368.9-197.1,368.9z"/><path d="M-46.5,394c-4.3,0-8.4,0.9-12.2,2.4C-61.2,368-85,345.8-114,345.8c-7.1,0-14,1.4-20.1,3.8c-2.4,0.9-3,1.9-3,3.7v99.9c0,1.9,1.5,3.5,3.4,3.7c0.1,0,86.7,0,87.3,0c17.4,0,31.5-14.1,31.5-31.5C-15,408.1-29.1,394-46.5,394z"/><path d="M-143.6,353.2c-1.9,0-3.4,1.6-3.5,3.5l-1.4,70.9l1.4,25.7c0,1.9,1.6,3.4,3.5,3.4c1.9,0,3.4-1.6,3.5-3.5l1.5-25.8l-1.5-70.9C-140.2,354.8-141.7,353.2-143.6,353.2z"/><path d="M-186.5,366.8c-1.4,0-2.5,1.1-2.6,2.6l-1.6,58.2l1.6,26.7c0,1.4,1.2,2.6,2.6,2.6s2.5-1.1,2.6-2.6l1.8-26.7l-1.8-58.2C-184,367.9-185.1,366.8-186.5,366.8z"/><path d="M-175.9,368.1c-1.5,0-2.8,1.2-2.8,2.8l-1.5,56.7l1.5,26.5c0,1.6,1.3,2.8,2.8,2.8s2.8-1.2,2.8-2.8l1.7-26.5l-1.7-56.7C-173.1,369.3-174.3,368.1-175.9,368.1z"/><path d="M-165.2,369.9c-1.7,0-3,1.3-3,3l-1.4,54.7l1.4,26.3c0,1.7,1.4,3,3,3c1.7,0,3-1.3,3-3l1.5-26.3l-1.5-54.7C-162.2,371.3-163.5,369.9-165.2,369.9z"/></g>
+        </svg>
+      </div>
+      <span class="lfm-modal-artist" id="modal-artist3">—</span>
+      <span class="lfm-modal-track" id="modal-track3">—</span>
+    </a>
+
+  </div>
+</div>
 
 <!-- Audio -->
 <audio id="bgMusic" loop>
@@ -1109,21 +1280,54 @@ window.addEventListener('DOMContentLoaded', function() {
       volHandle=document.getElementById('volHandle'),
       volPct=document.getElementById('volPct');
   var dragging=false;
-  function syncIcon(){var p=audio.paused; playIco.style.display=p?'block':'none'; pauseIco.style.display=!p?'block':'none';}
-  audio.addEventListener('play',function(){syncIcon();document.getElementById('audioControls').classList.add('visible');});
-  audio.addEventListener('pause',function(){syncIcon();document.getElementById('audioControls').classList.remove('visible');});
-  audio.addEventListener('ended',function(){syncIcon();document.getElementById('audioControls').classList.remove('visible');});
-  btn.addEventListener('click',function(){if(audio.paused){var p=audio.play();if(p&&p.catch)p.catch(function(){});}else{audio.pause();}});
-  function setVolume(r){r=Math.max(0,Math.min(1,r));audio.volume=r;var p=Math.round(r*100);volFill.style.width=p+'%';volHandle.style.left=p+'%';volPct.textContent=p+'%';}
+  function syncIcon(){if(!playIco||!pauseIco)return;var p=audio.paused; playIco.style.display=p?'block':'none'; pauseIco.style.display=!p?'block':'none';}
+  audio.addEventListener('play',function(){syncIcon();var ac=document.getElementById('audioControls');if(ac)ac.classList.add('visible');});
+  audio.addEventListener('pause',function(){syncIcon();var ac=document.getElementById('audioControls');if(ac)ac.classList.remove('visible');});
+  audio.addEventListener('ended',function(){syncIcon();var ac=document.getElementById('audioControls');if(ac)ac.classList.remove('visible');});
+  if(btn) btn.addEventListener('click',function(){if(audio.paused){var p=audio.play();if(p&&p.catch)p.catch(function(){});}else{audio.pause();}});
+  function setVolume(r){r=Math.max(0,Math.min(1,r));audio.volume=r;var p=Math.round(r*100);if(volFill)volFill.style.width=p+'%';if(volHandle)volHandle.style.left=p+'%';if(volPct)volPct.textContent=p+'%';}
   function ratioFromEvent(e){var rect=volTrack.getBoundingClientRect(),cx=e.touches?e.touches[0].clientX:e.clientX;return(cx-rect.left)/rect.width;}
-  volTrack.addEventListener('mousedown',function(e){dragging=true;setVolume(ratioFromEvent(e));e.preventDefault();});
+  if(volTrack){volTrack.addEventListener('mousedown',function(e){dragging=true;setVolume(ratioFromEvent(e));e.preventDefault();});}
   document.addEventListener('mousemove',function(e){if(dragging)setVolume(ratioFromEvent(e));});
   document.addEventListener('mouseup',function(){dragging=false;});
-  volTrack.addEventListener('touchstart',function(e){dragging=true;setVolume(ratioFromEvent(e));e.preventDefault();},{passive:false});
+  if(volTrack){volTrack.addEventListener('touchstart',function(e){dragging=true;setVolume(ratioFromEvent(e));e.preventDefault();},{passive:false});}
   document.addEventListener('touchmove',function(e){if(dragging)setVolume(ratioFromEvent(e));},{passive:true});
   document.addEventListener('touchend',function(){dragging=false;});
   setVolume(1);
 })();
+
+/* ════════════════════════════════════════════════
+   SOCIAL CARD TABS
+════════════════════════════════════════════════ */
+function switchTab(tab, btn) {
+  // update active button
+  document.querySelectorAll('.sect-tab').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  // show/hide cards
+  var cards = document.querySelectorAll('.scard');
+  cards.forEach(function(c) {
+    if (tab === 'all') {
+      c.style.display = '';
+    } else {
+      // match: tiktok, github, insta, lastfm
+      c.style.display = c.classList.contains(tab) ? '' : 'none';
+    }
+  });
+  // also adjust grid columns
+  var grid = document.querySelector('.social-cards');
+  if (grid) grid.style.gridTemplateColumns = tab === 'all' ? '' : '1fr';
+}
+
+
+function openLfmModal() {
+  var m = document.getElementById('lfmModal');
+  if (m) { m.style.display = 'flex'; requestAnimationFrame(function(){ m.classList.add('open'); }); }
+}
+function closeLfmModal() {
+  var m = document.getElementById('lfmModal');
+  if (m) { m.classList.remove('open'); setTimeout(function(){ m.style.display='none'; }, 300); }
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmModal(); });
 
 /* ════════════════════════════════════════════════
    LAST.FM — now playing + scrobble count + profile pic
@@ -1136,15 +1340,19 @@ window.addEventListener('DOMContentLoaded', function() {
   var POLL_MS  = 30000;
   var _lastTrackKey = '';
 
-  /* ── Bottom card elements (original IDs, preserved) ── */
-  var artEl     = document.getElementById('lfm-art2');
-  var trackEl   = document.getElementById('lfm-track2');
-  var artistEl  = document.getElementById('lfm-artist2');
-  var dotEl     = document.getElementById('lfm-dot2');
-  var labelEl   = document.getElementById('lfm-label2');
+  /* ── Bottom card elements — removed (player moved to modal) ── */
+  var artEl     = null; // removed
+  var trackEl   = null; // removed
+  var artistEl  = null; // removed
+  var dotEl     = null; // removed
+  var labelEl   = null; // removed
   var scrobEl   = document.getElementById('lfm-scrobbles-count');
   var profAvEl  = document.getElementById('lfm-profile-av');
   var userNameEl= document.getElementById('lfm-username');
+
+  /* ── Modal elements ── */
+  var modalDot   = document.getElementById('modal-dot');
+  var modalLabel = document.getElementById('modal-now-label');
 
   /* ── Hero mini-player elements (new IDs) ── */
   var hArt    = document.getElementById('lfm-h-art');
@@ -1159,7 +1367,15 @@ window.addEventListener('DOMContentLoaded', function() {
   /* ── Performance card ── */
   var perfCur  = document.getElementById('perfCurrent');
   var perfFill = document.getElementById('perfFill');
-  var PERF_TARGET = 30000;
+  var perfTotalEl = document.getElementById('perfTotal');
+  var PERF_BASE = 30000;
+  var PERF_STEP = 20000;
+
+  function calcPerfTarget(n) {
+    var t = PERF_BASE;
+    while (n >= t) t += PERF_STEP;
+    return t;
+  }
 
   /* ── Tracker sidebar dot ── */
   var tcDot  = document.getElementById('lfm-tc-dot');
@@ -1187,9 +1403,12 @@ window.addEventListener('DOMContentLoaded', function() {
           if (scrobEl)  scrobEl.textContent  = fmt + ' scrobbles';
           if (hScr)     hScr.textContent     = fmt + ' scrobbles';
           if (perfCur)  perfCur.textContent  = fmt;
-          /* performance bar fill */
+          /* performance bar fill with auto-increasing target */
+          var target = calcPerfTarget(n);
+          var prevTarget = target - PERF_STEP;
+          if (perfTotalEl) perfTotalEl.textContent = (target / 1000) + 'k';
           if (perfFill) {
-            var pct = Math.min(100, Math.round((n / PERF_TARGET) * 100));
+            var pct = Math.min(100, Math.round(((n - prevTarget) / PERF_STEP) * 100));
             perfFill.style.width = pct + '%';
           }
         }
@@ -1228,24 +1447,38 @@ window.addEventListener('DOMContentLoaded', function() {
         var key    = name + '|' + artist;
 
         /* update text in both locations */
-        if (trackEl)  trackEl.textContent  = name;
-        if (artistEl) artistEl.textContent = artist;
         if (hTrack)   hTrack.textContent   = name;
         if (hArtist)  hArtist.textContent  = artist;
 
+        /* update modal platform links */
+        var q = encodeURIComponent(artist + ' ' + name);
+        var ytLink = document.getElementById('lfm-yt-link');
+        var spLink = document.getElementById('lfm-sp-link');
+        var scLink = document.getElementById('lfm-sc-link');
+        if (ytLink) ytLink.href = 'https://music.youtube.com/search?q=' + q;
+        if (spLink) spLink.href = 'https://open.spotify.com/search/' + q;
+        if (scLink) scLink.href = 'https://soundcloud.com/search?q=' + q;
+        /* update modal artist/track text */
+        ['1','2','3'].forEach(function(n2){
+          var a = document.getElementById('modal-artist'+n2);
+          var t = document.getElementById('modal-track'+n2);
+          if (a) a.textContent = artist;
+          if (t) t.textContent = name;
+        });
+
         /* update live/idle state */
         if (nowPlaying) {
-          if (dotEl)   dotEl.className   = 'lfm-dot';
-          if (labelEl) { labelEl.className = 'lfm-badge-label'; labelEl.textContent = 'LIVE'; }
           if (hDot)    hDot.className    = 'lfm-h-dot';
           if (hLabel)  { hLabel.className = 'lfm-h-label'; hLabel.textContent = 'LIVE'; }
+          if (modalDot)   modalDot.className   = 'lfm-h-dot';
+          if (modalLabel) modalLabel.textContent = 'AGORA TOCANDO';
           if (tcDot)   tcDot.className   = 'tc-dot live';
           if (tcText)  tcText.textContent = 'Last.fm: ' + name.substring(0,18);
         } else {
-          if (dotEl)   dotEl.className   = 'lfm-dot idle';
-          if (labelEl) { labelEl.className = 'lfm-badge-label idle'; labelEl.textContent = 'LAST'; }
           if (hDot)    hDot.className    = 'lfm-h-dot idle';
           if (hLabel)  { hLabel.className = 'lfm-h-label idle'; hLabel.textContent = 'LAST'; }
+          if (modalDot)   modalDot.className   = 'lfm-h-dot idle';
+          if (modalLabel) modalLabel.textContent = 'LAST PLAYED';
           if (tcDot)   tcDot.className   = 'tc-dot';
           if (tcText)  tcText.textContent = 'Last.fm: ' + name.substring(0,18);
         }
@@ -1258,7 +1491,6 @@ window.addEventListener('DOMContentLoaded', function() {
             var u2 = imgs[i]['#text'];
             if (u2 && u2.indexOf('2a96cbd8') === -1) { art = u2; break; }
           }
-          if (artEl) { artEl.src = art ? art : ''; artEl.style.opacity = art ? '1' : '0'; }
           if (hArt)  { hArt.src  = art ? art : ''; hArt.style.opacity  = art ? '1' : '0'; }
           /* dynamic color on hero player based on album art */
           var heroCard = document.querySelector('.lfm-hero-card');
@@ -1276,12 +1508,9 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   function setIdle() {
-    if (dotEl)   dotEl.className   = 'lfm-dot idle';
-    if (labelEl) { labelEl.className = 'lfm-badge-label idle'; labelEl.textContent = 'LAST'; }
     if (hDot)    hDot.className    = 'lfm-h-dot idle';
     if (hLabel)  { hLabel.className = 'lfm-h-label idle'; hLabel.textContent = 'LAST'; }
-    if (trackEl  && !trackEl.textContent)  trackEl.textContent  = '—';
-    if (artistEl && !artistEl.textContent) artistEl.textContent = '—';
+    if (modalDot)   modalDot.className   = 'lfm-h-dot idle';
     if (hTrack   && !hTrack.textContent)   hTrack.textContent   = '—';
     if (hArtist  && !hArtist.textContent)  hArtist.textContent  = '—';
   }
