@@ -11,34 +11,61 @@
     :root {
       --bg:           #080808;
       --card:         rgba(12,12,12,0.85);
-      --glass:        rgba(255,255,255,0.04);
-      --glass-border: rgba(255,255,255,0.07);
+      --glass:        rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.18);
       --text:         #ffffff;
-      --text-dim:     rgba(255,255,255,0.48);
-      --text-mute:    rgba(255,255,255,0.22);
-      --radius:       18px;
-      --sb-w:         60px;
-      --rp-w:         216px;
-      /* Social accent colors */
-      --tiktok:  #00F2A0;
-      --github:  #FF2D55;
-      --insta:   #00A2FF;
-      --lastfm:  #C724FF;
+      --text-dim:     rgba(255,255,255,0.65);
+      --text-mute:    rgba(255,255,255,0.35);
+      --radius:       20px;
+      --radius-sm:    14px;
+      --sb-w:         74px;
+      --rp-w:         230px;
+      --blur:         6px;
+      --blur-heavy:   12px;
+      --glass-bg:     rgba(255,255,255,0.23);
+      --glass-bg-hover: rgba(255,255,255,0.28);
+      --glass-shine:  rgba(255,255,255,0.24);
+      --shadow-card:  0 6px 32px rgba(0,0,0,0.32), 0 1px 0 rgba(255,255,255,0.08) inset;
+      --shadow-hover: 0 12px 40px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.14) inset;
+      --accent-c1:    #ffffff;
+      --accent-c2:    #888888;
+      --accent-c3:    #555555;
+      --accent-glow:  rgba(255,255,255,0.55);
+      --dyn-border-a: rgba(255,255,255,0.18);
+      --dyn-border-b: rgba(255,255,255,0.14);
     }
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html {
+      background: #0a0a0a;
+      scroll-behavior: smooth;
+      overscroll-behavior-y: contain;
+    }
     html, body { height:100%; overflow-x:hidden; }
     body {
-      background: var(--bg);
+      background: #0a0a0a url('https://raw.githubusercontent.com/ans1a/ans1a.github.io/refs/heads/main/bgp.gif') center/cover fixed;
       color: var(--text);
       font-family: -apple-system,'SF Pro Display','Helvetica Neue',Arial,sans-serif;
       font-weight: 700;
+      font-size: 16px;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.30);
+      z-index: 0; pointer-events: none;
     }
 
     /* ══ INTRO OVERLAY ══ */
     #intro {
-      position: fixed; inset: 0; z-index: 999;
+      position: fixed; inset: 0; z-index: 9999;
       background: rgba(0,0,0,.82);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -47,55 +74,81 @@
     }
     #intro.fade-out { opacity: 0; pointer-events: none; }
     #sigilImg {
-      width: 210px; max-width: 65vw;
+      width: 180px; max-width: 60vw;
       user-select: none; pointer-events: none;
       animation: breathe 2.6s ease-in-out infinite;
     }
     @keyframes breathe {
-      0%   { opacity:.12; filter:brightness(.4) drop-shadow(0 0 6px rgba(255,255,255,.2)); }
-      50%  { opacity:.95; filter:brightness(1.4) drop-shadow(0 0 36px #fff) drop-shadow(0 0 60px rgba(255,255,255,.4)); }
-      100% { opacity:.12; filter:brightness(.4) drop-shadow(0 0 6px rgba(255,255,255,.2)); }
+      0%   { opacity:.10; filter:brightness(.4) drop-shadow(0 0 6px rgba(255,255,255,.2)); }
+      50%  { opacity:.92; filter:brightness(1.4) drop-shadow(0 0 36px #fff) drop-shadow(0 0 60px rgba(255,255,255,.4)); }
+      100% { opacity:.10; filter:brightness(.4) drop-shadow(0 0 6px rgba(255,255,255,.2)); }
     }
 
-    /* ══ BG GIF + OVERLAY ══ */
-    #bgGif {
-      position: fixed; inset:0; width:100%; height:100%;
-      object-fit: cover; opacity:.44; z-index:-2; pointer-events:none;
+    #bgGif  { display: none; }
+    #overlay { display: none; }
+
+    /* ══════════════════════════════════════════════════
+       HEARTBEAT GLOW — brightness pulse ±20%
+       Double-beat (lub-dub) every 2s
+    ══════════════════════════════════════════════════ */
+    @keyframes textGlowPulse {
+      0%   { color: rgba(255,255,255,0.72); text-shadow: 0 0 4px rgba(255,255,255,0.18); }
+      /* --- lub --- */
+      12%  { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.95), 0 0 18px rgba(255,255,255,0.50), 0 0 34px rgba(255,255,255,0.22); }
+      19%  { color: rgba(255,255,255,0.58); text-shadow: none; }
+      /* --- dub --- */
+      26%  { color: rgba(255,255,255,0.90); text-shadow: 0 0 6px rgba(255,255,255,0.75), 0 0 14px rgba(255,255,255,0.35); }
+      34%  { color: rgba(255,255,255,0.68); text-shadow: 0 0 3px rgba(255,255,255,0.12); }
+      /* --- rest --- */
+      100% { color: rgba(255,255,255,0.72); text-shadow: 0 0 4px rgba(255,255,255,0.18); }
     }
-    #overlay {
-      position: fixed; inset:0;
-      background: rgba(0,0,0,.38); z-index:-1; pointer-events:none;
+
+    /* Apply heartbeat glow to all target text */
+    .scard-name, .scard-sub, .lfm-h-track, .lfm-h-artist,
+    .lfm-h-uname, .lfm-h-scr, .tc-title, .dc-name,
+    .perf-nums > span:first-child, .nav-user-name, .tc-badge,
+    .lfm-badge-label, .lfm-h-label, #lyrTxt,
+    .lfm-modal-title, .lfm-modal-artist, .hero-title,
+    .nav-brand {
+      color: rgba(255,255,255,0.78);
+      animation: textGlowPulse 2s ease-in-out infinite;
     }
 
     /* ══════════════════════════════════════════════════
-       DASHBOARD GRID  — sidebar | main | right-panel
+       LIQUID GLASS — iOS-style premium glass
+    ══════════════════════════════════════════════════ */
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-shine);
+      border-radius: var(--radius);
+      backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      box-shadow: var(--shadow-card),
+                  inset 0 1px 0 rgba(255,255,255,0.18),
+                  inset 0 -1px 0 rgba(255,255,255,0.04);
+    }
+
+    /* ══════════════════════════════════════════════════
+       DASHBOARD GRID
     ══════════════════════════════════════════════════ */
     .dashboard {
       display: grid;
       grid-template-columns: var(--sb-w) 1fr var(--rp-w);
       gap: 10px;
-      max-width: 1080px;
+      max-width: min(96vw, 1080px);
+      width: 92%;
       margin: 0 auto;
-      padding: 18px 14px 28px;
-      min-height: 100vh;
+      padding: 14px 0 20px;
+      min-height: auto;
       align-items: start;
-      /* intro reveal state */
-      opacity: 0; transform: translateY(-36px); filter: blur(12px);
+      position: relative; z-index: 1;
+      opacity: 0; transform: translateY(-18px) scale(0.992);
       visibility: hidden; pointer-events: none;
-      transition: opacity .85s ease, transform .85s ease, filter .85s ease;
+      transition: opacity .75s ease, transform .75s ease;
     }
     .dashboard.revealed {
-      opacity:1; transform:translateY(0); filter:blur(0);
+      opacity:1; transform:translateY(0) scale(1);
       visibility:visible; pointer-events:auto;
-    }
-
-    /* ══ GLASS MIXIN (applied via shared class) ══ */
-    .glass {
-      background: rgba(8,8,8,0.45);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      backdrop-filter: blur(50px);
-      -webkit-backdrop-filter: blur(50px);
     }
 
     /* ══════════════════════════════════════════════════
@@ -105,21 +158,27 @@
       display: flex; flex-direction: column; align-items: center;
       padding: 14px 0 12px;
       gap: 4px;
-      position: sticky; top: 18px;
+      position: sticky; top: 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-shine);
+      border-radius: var(--radius);
+      backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.18);
     }
     .sb-icon {
-      width: 40px; height: 40px;
+      width: 42px; height: 42px;
       display: flex; align-items:center; justify-content:center;
-      border-radius: 11px; cursor: pointer;
+      border-radius: 12px; cursor: pointer;
       color: var(--text-dim); text-decoration: none;
       transition: background .15s, color .15s;
     }
-    .sb-icon:hover  { background: var(--glass); color: var(--text); }
-    .sb-icon.active { background: rgba(255,255,255,.08); color: var(--text); }
+    .sb-icon:hover  { background: rgba(255,255,255,0.10); color: var(--text); }
+    .sb-icon.active { background: rgba(255,255,255,.12); color: var(--text); }
     .sb-icon svg    { width:18px; height:18px; fill:currentColor; }
-    .sb-div { width:22px; height:1px; background:var(--glass-border); margin:6px 0; }
+    .sb-div { width:24px; height:1px; background:rgba(255,255,255,0.14); margin:5px 0; }
     .sb-label {
-      font-size: 7.5px; font-weight: 900; letter-spacing: 1.2px;
+      font-size: 8px; font-weight: 900; letter-spacing: 1.2px;
       color: var(--text-mute); text-transform: uppercase;
       margin-top: auto; padding-top: 14px;
       writing-mode: vertical-lr; transform: rotate(180deg);
@@ -132,95 +191,65 @@
       display: flex; flex-direction: column; gap: 10px; min-width:0;
     }
 
-    /* ── TOP NAV BAR ── */
-    .top-nav {
-      display: flex; align-items: center; gap: 9px;
-      padding: 8px 14px;
+    /* ── SOCIAL TABS BAR — OUTSIDE, ABOVE HERO ── */
+    .social-tabs-bar {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 18px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-shine);
+      border-radius: 18px;
+      backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.16);
     }
-    .nav-search {
-      flex: 1; display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px; border-radius: 11px;
-      background: var(--glass); border: 1px solid var(--glass-border);
-      color: var(--text-mute); font-size: 11.5px; font-weight: 600;
+    .social-tabs-bar .sect-tab {
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      transition: background .15s;
+      padding: 0;
     }
-    .nav-search svg { width:13px; height:13px; fill:var(--text-mute); flex-shrink:0; }
-    .nav-brand {
-      font-size: 12px; font-weight: 900; letter-spacing: 2.5px;
-      line-height: 1; text-align: center;
-      background: linear-gradient(180deg,#fff,rgba(255,255,255,.5));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    .social-tabs-bar .sect-tab svg {
+      width: 17px; height: 17px; fill: var(--text-dim);
+      transition: fill .15s;
+      animation: glowWhite 2s ease-in-out infinite;
     }
-    .nav-right { display:flex; align-items:center; gap:7px; }
-    .nav-bell {
-      width:33px; height:33px; display:flex; align-items:center; justify-content:center;
-      border-radius:9px; background:var(--glass); border:1px solid var(--glass-border);
-    }
-    .nav-bell svg { width:13px; height:13px; fill:var(--text-dim); }
-    /* Clicking the name redirects to #card (the dashboard top) */
-    .nav-user {
-      display:flex; align-items:center; gap:7px;
-      padding: 4px 10px 4px 4px; border-radius:11px;
-      background:var(--glass); border:1px solid var(--glass-border);
-      text-decoration:none; color:var(--text); cursor:pointer;
-    }
-    .nav-user img { width:25px; height:25px; border-radius:50%; object-fit:cover; }
-    .nav-user-name { font-size:11px; font-weight:800; letter-spacing:.3px; }
-    .nav-badge {
-      padding:6px 11px; border-radius:8px;
-      background:rgba(255,255,255,.9); color:#000;
-      font-size:11px; font-weight:900; letter-spacing:.3px;
-      border:none; cursor:pointer;
-      box-shadow:0 0 12px rgba(255,255,255,.22);
-      transition:box-shadow .15s, transform .15s;
-    }
-    .nav-badge:hover { box-shadow:0 0 20px rgba(255,255,255,.44); transform:translateY(-1px); }
+    .social-tabs-bar .sect-tab:hover svg,
+    .social-tabs-bar .sect-tab.active svg { fill: #fff; }
+    .social-tabs-bar .sect-tab.active { background: rgba(255,255,255,.12); }
 
     /* ── HERO SECTION ── */
-    /* Reference: print 2 — text top-left, lfm top-center (yellow circle), GIF center */
     .hero-section {
-      position: relative; height: 296px;
+      position: relative; height: 280px;
       overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-shine);
+      box-shadow: var(--shadow-card);
     }
     .hero-bg {
       position: absolute; inset:0;
       width:100%; height:100%; object-fit:cover;
-      opacity:.65; z-index:0; pointer-events:none;
+      opacity:.60; z-index:0; pointer-events:none;
     }
     .hero-overlay-fade {
       position:absolute; inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,.35) 0%, rgba(6,6,6,.75) 100%);
+      background:linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(6,6,6,.50) 100%);
       z-index:1; pointer-events:none;
     }
 
-    /* Play / volume controls pinned top-left of hero */
+    /* Play / volume controls */
     #audioControls {
-      position:absolute; top:14px; left:46px; right:14px; z-index:20;
-      display:flex; align-items:center; gap:7px;
+      position:absolute; top:12px; left:40px; right:12px; z-index:20;
+      display:flex; align-items:center; gap:6px;
       opacity:0; pointer-events:none; transition:opacity .3s ease;
     }
     #audioControls.visible { opacity:.5; pointer-events:auto; }
-    #volPct { font-size:8.5px; font-weight:800; color:rgba(255,255,255,.7); min-width:26px; text-align:right; }
+    #volPct { font-size:8px; font-weight:800; color:rgba(255,255,255,.7); min-width:24px; text-align:right; }
     #volTrack { flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,.18); position:relative; cursor:pointer; touch-action:none; }
     #volFill   { height:100%; border-radius:2px; background:rgba(255,255,255,.85); width:100%; transition:width .05s; pointer-events:none; }
-    #volHandle { position:absolute; top:50%; right:0; width:9px; height:9px; border-radius:50%; background:#fff; transform:translate(50%,-50%); box-shadow:0 0 5px rgba(255,255,255,.5); pointer-events:none; }
+    #volHandle { position:absolute; top:50%; right:0; width:8px; height:8px; border-radius:50%; background:#fff; transform:translate(50%,-50%); box-shadow:0 0 5px rgba(255,255,255,.5); pointer-events:none; }
 
-    /* Laveyan text rotator — bottom-left of hero */
-    .hero-text {
-      position:absolute; bottom:18px; left:20px; z-index:10;
-      display:flex; flex-direction:column; gap:6px; max-width:190px;
-    }
-    .hero-mot-pre  { font-size:17px; font-weight:800; color:#fff; line-height:1.2; }
-    .hero-mot-pill {
-      display:inline-block;
-      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16);
-      border-radius:20px; padding:4px 13px;
-      font-size:13px; font-weight:700; color:#fff;
-      max-width:190px; word-break:break-word;
-      transition:opacity .25s ease;
-    }
-    #heroRotTxt { display:block; }
-
-    /* Last.fm mini-player — standalone (below hero) */
+    /* Last.fm mini-player standalone */
     .lfm-hero-card.lfm-standalone {
       position: static !important;
       transform: none !important;
@@ -229,305 +258,118 @@
       transition: transform .15s, box-shadow .15s;
     }
     .lfm-hero-card.lfm-standalone:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 0 8px 28px rgba(199,36,255,.18);
+      transform: translateY(-3px) !important;
+      box-shadow: var(--shadow-hover);
     }
-    /* Last.fm mini-player — original absolute (kept for possible reuse) */
     .lfm-hero-card {
-      position:absolute; top:12px; left:50%; transform:translateX(-50%);
-      z-index:15; width:230px;
-      background:rgba(6,6,6,.38);
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:13px; padding:10px 12px;
-      backdrop-filter:blur(50px); -webkit-backdrop-filter:blur(50px);
+      position:absolute; top:10px; left:50%; transform:translateX(-50%);
+      z-index:15; width:260px;
+      background: var(--glass-bg);
+      border:1px solid var(--glass-shine);
+      border-radius: var(--radius-sm); padding:18px 18px;
+      backdrop-filter:blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter:blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
       overflow:hidden;
+      box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.16);
       transition: background .8s ease, border-color .8s ease;
     }
-    /* Dynamic color overlay from album art */
-    .lfm-hero-card::before {
-      content:''; position:absolute; inset:0; z-index:0;
-      background-image: var(--lfm-art-url, none);
-      background-size:cover; background-position:center;
-      filter:blur(24px) brightness(.35) saturate(2.5);
-      transform:scale(1.4);
-      opacity:1;
-      transition: background-image .8s ease;
-      border-radius:13px;
-    }
+    .lfm-hero-card::before { display: none; }
     .lfm-h-row {
-      display:flex; align-items:center; gap:9px; position:relative; z-index:1;
+      display:flex; align-items:center; gap:14px; position:relative; z-index:1;
     }
     .lfm-h-art {
-      width:38px; height:38px; border-radius:8px; flex-shrink:0;
+      width:58px; height:58px; border-radius:10px; flex-shrink:0;
       object-fit:cover; background:rgba(255,255,255,.06);
-      box-shadow:0 3px 10px rgba(0,0,0,.6); transition:opacity .5s;
+      box-shadow:0 2px 10px rgba(0,0,0,.6); transition:opacity .5s;
     }
     .lfm-h-art:not([src]),.lfm-h-art[src=""] { opacity:0; }
     .lfm-h-info { flex:1; min-width:0; }
-    .lfm-h-track  { font-size:11.5px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .lfm-h-artist { font-size:9.5px; font-weight:600; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .lfm-h-badge  { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; }
+    .lfm-h-track  { font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lfm-h-artist { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px; }
+    .lfm-h-badge  { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; }
     .lfm-h-dot {
-      width:7px; height:7px; border-radius:50%;
-      background:#C724FF; box-shadow:0 0 7px #C724FF;
-      animation:lfmPulse 1.4s ease-in-out infinite;
+      width:10px; height:10px; border-radius:50%;
+      background:#fff; box-shadow:0 0 10px #fff;
+      animation:lfmPulse 2s ease-in-out infinite;
     }
     .lfm-h-dot.idle { background:#444; box-shadow:none; animation:none; }
-    .lfm-h-label { font-size:7px; font-weight:900; color:#C724FF; letter-spacing:.8px; text-transform:uppercase; }
-    .lfm-h-label.idle { color:#444; }
+    .lfm-h-label {
+      font-size:9px; font-weight:900; letter-spacing:.8px; text-transform:uppercase;
+    }
+    .lfm-h-label.idle { color: #444 !important; text-shadow: none !important; animation: none !important; }
     .lfm-h-foot {
-      display:flex; align-items:center; gap:8px;
-      margin-top:7px; padding-top:7px;
-      border-top:1px solid rgba(255,255,255,.1);
+      display:flex; align-items:center; gap:10px;
+      margin-top:12px; padding-top:12px;
+      border-top:1px solid rgba(255,255,255,.10);
       position:relative; z-index:1;
     }
     .lfm-h-av {
-      width:20px; height:20px; border-radius:50%;
+      width:28px; height:28px; border-radius:50%;
       object-fit:cover; background:rgba(255,255,255,.07); flex-shrink:0;
     }
-    .lfm-h-uname { font-size:9.5px; font-weight:800; color:var(--text); flex:1; }
-    .lfm-h-scr   { font-size:9px; font-weight:700; color:var(--text-dim); }
+    .lfm-h-uname { font-size:13px; font-weight:800; flex:1; }
+    .lfm-h-scr   { font-size:11px; font-weight:700; }
 
-    /* Profile GIF — bottom-center of hero (replaces anime girl) */
-    .hero-gif-wrap {
-      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-      z-index:12; width:176px; height:176px; border-radius:50% 50% 0 0;
-      overflow:hidden;
-      border:2px solid rgba(255,255,255,.1);
-      box-shadow:0 0 28px rgba(255,255,255,.07), 0 -16px 40px rgba(0,0,0,.55);
-    }
-    .hero-gif-wrap img { width:100%; height:100%; object-fit:cover; }
-
-    /* Title strip — bottom-center overlay */
+    /* Title strip — bottom-right overlay */
     .hero-title-strip {
-      position:absolute; bottom:14px; right:18px; z-index:14;
+      position:absolute; bottom:16px; right:20px; z-index:14;
       text-align:right;
     }
     .hero-title-wrap { position:relative; display:inline-block; }
     .hero-title-glow {
       position:absolute; inset:0;
-      font-size:13.5px; font-weight:700; letter-spacing:.6px; color:#fff;
-      filter:blur(5px); animation:glowFade 4s linear infinite;
+      font-size:16px; font-weight:700; letter-spacing:.8px; color:#fff;
+      filter:blur(5px); animation:glowFade 2s linear infinite;
       pointer-events:none; user-select:none; z-index:0;
     }
     .hero-title {
       position:relative; z-index:1;
-      font-size:13.5px; font-weight:700; letter-spacing:.6px;
-      background:linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
-      background-size:200% auto;
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      animation:rainbowShift 4s linear infinite;
+      font-size:16px; font-weight:700; letter-spacing:.8px;
     }
     #sparkleCanvas {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%);
-      width:220px; height:60px; pointer-events:none; z-index:5;
+      width:240px; height:60px; pointer-events:none; z-index:5;
     }
 
-    /* ── BOTTOM SECTION: Laveyan lyrics + 4 social cards ── */
-    .bottom-section { display:flex; flex-direction:column; gap:8px; }
-    .sect-header {
-      display:flex; align-items:center; gap:8px; padding:0 2px;
+    /* Laveyan text rotator */
+    .hero-text {
+      position:absolute; bottom:18px; left:20px; z-index:10;
+      display:flex; flex-direction:column; gap:6px; max-width:210px;
     }
-    .sect-title { font-size:11.5px; font-weight:700; color:var(--text-dim); }
-    .sect-badge {
-      background:var(--glass); border:1px solid var(--glass-border);
-      border-radius:6px; padding:2px 9px;
-      font-size:10px; font-weight:800; color:var(--text);
+    .hero-mot-pre  { font-size:18px; font-weight:800; color:#fff; line-height:1.2; }
+    .hero-mot-pill {
+      display:inline-block;
+      background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.16);
+      border-radius:20px; padding:4px 14px;
+      font-size:13px; font-weight:700; color:#fff;
+      max-width:210px; word-break:break-word;
+      transition:opacity .25s ease;
     }
-    /* Small social icon links row (top-right of section header) */
-    .sect-icons { margin-left:auto; display:flex; gap:14px; }
-    .sect-icons a { display:flex; align-items:center; }
-    .sect-icons svg { width:15px; height:15px; fill:var(--text-dim); transition:fill .15s; animation:glowWhite 2.5s ease-in-out infinite; }
-    .sect-icons a:hover svg { fill:#fff; }
+    #heroRotTxt { display:block; }
 
-    /* Laveyan lyrics small rotator */
-    #lyrics { text-align:center; min-height:16px; padding:0 6px; }
-    #lyrTxt {
-      display:inline-block; opacity:0; transition:opacity .2s ease;
-      font-size:10.5px; font-weight:700; letter-spacing:.4px;
-      background:linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
-      background-size:200% auto;
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      animation:rainbowShift 4s linear infinite;
+    /* ══ SIGIL ROW — below hero (moved from right col) ══ */
+    .sigil-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
     }
-
-    /* ══ 4 SOCIAL CARDS — horizontal grid ══ */
-    .social-cards {
-      display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
-    }
-    .scard {
-      display:flex; flex-direction:column; gap:9px;
-      padding:13px 11px;
-      border-radius:14px;
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,.1);
-      backdrop-filter:blur(50px) brightness(1.1); -webkit-backdrop-filter:blur(50px) brightness(1.1);
-      text-decoration:none; color:#fff;
-      position:relative; overflow:hidden;
-      transition:background .2s, transform .2s, border-color .2s;
-      cursor:pointer;
-    }
-    /* Colored accent top-border per platform — animated */
-    .scard::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:2px;
-      border-radius:14px 14px 0 0; opacity:.65; transition:opacity .2s;
-      background-size: 200% auto;
-      animation: rainbowShift 4s linear infinite;
-    }
-    .scard:hover::before { opacity:1; }
-    .scard.tiktok::before { background: linear-gradient(90deg,#00F2A0,#fff,#00F2A0,#88ffe0,#00F2A0); background-size:200% auto; box-shadow:0 0 10px #00F2A0; animation: rainbowShift 3s linear infinite; }
-    .scard.github::before { background: linear-gradient(90deg,#FF2D55,#fff,#FF2D55,#ff8fa8,#FF2D55); background-size:200% auto; box-shadow:0 0 10px #FF2D55; animation: rainbowShift 3s linear infinite; }
-    .scard.insta::before  { background: linear-gradient(90deg,#00A2FF,#fff,#00A2FF,#88d4ff,#00A2FF); background-size:200% auto; box-shadow:0 0 10px #00A2FF; animation: rainbowShift 3s linear infinite; }
-    .scard.lastfm::before { background: linear-gradient(90deg,#C724FF,#fff,#C724FF,#e088ff,#C724FF); background-size:200% auto; box-shadow:0 0 10px #C724FF; animation: rainbowShift 3s linear infinite; }
-    .scard.tiktok:hover { background:rgba(0,242,160,.05);  border-color:rgba(0,242,160,.16);  transform:translateY(-2px); }
-    .scard.github:hover { background:rgba(255,45,85,.05);  border-color:rgba(255,45,85,.16);  transform:translateY(-2px); }
-    .scard.insta:hover  { background:rgba(0,162,255,.05);  border-color:rgba(0,162,255,.16);  transform:translateY(-2px); }
-    .scard.lastfm:hover { background:rgba(199,36,255,.05); border-color:rgba(199,36,255,.16); transform:translateY(-2px); }
-    .scard:active { transform:scale(.975); }
-
-    /* blurred avatar bg */
-    .scard-bg {
-      position:absolute; inset:0;
-      background-size:cover; background-position:center;
-      filter:blur(30px) brightness(.08) saturate(1.5);
-      transform:scale(1.4); z-index:0; border-radius:14px;
-    }
-    .scard-top {
-      position:relative; z-index:1;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .scard-av {
-      width:42px; height:42px; border-radius:50%; overflow:hidden;
-      border:1.5px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.06); flex-shrink:0;
-    }
-    .scard-av img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .4s; }
-    .scard-av img:not([src]),.scard-av img[src=""] { opacity:0; }
-    .scard-ico { width:19px; height:19px; }
-    .scard-ico svg { width:100%; height:100%; fill:rgba(255,255,255,.38); transition:fill .18s; }
-    .scard:hover .scard-ico svg { fill:rgba(255,255,255,.82); }
-    .scard-info { position:relative; z-index:1; }
-    .scard-name {
-      font-size:13px; font-weight:800; color:#fff;
-      letter-spacing:.1px; line-height:1.2;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .scard-sub {
-      font-size:10px; font-weight:600; color:var(--text-dim);
-      letter-spacing:.2px; margin-top:2px;
-    }
-    /* Last.fm extended row */
-    .scard-lfm-extra {
-      position:relative; z-index:1;
-      display:flex; align-items:center; gap:7px;
-      padding-top:8px; border-top:1px solid rgba(255,255,255,.07);
-    }
-    .lfm-album-art {
-      width:30px; height:30px; border-radius:5px; flex-shrink:0;
-      object-fit:cover; background:rgba(255,255,255,.06); transition:opacity .5s;
-    }
-    .lfm-album-art:not([src]),.lfm-album-art[src=""] { opacity:0; }
-    .lfm-track-info { flex:1; min-width:0; }
-    .lfm-track-name   { font-size:10px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .lfm-artist-name  { font-size:9px; font-weight:600; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .lfm-dot { width:6px; height:6px; border-radius:50%; background:#C724FF; box-shadow:0 0 6px #C724FF; animation:lfmPulse 1.4s ease-in-out infinite; flex-shrink:0; }
-    .lfm-dot.idle { background:#444; box-shadow:none; animation:none; }
-    .lfm-badge-label { font-size:7.5px; font-weight:900; color:#C724FF; letter-spacing:.8px; text-transform:uppercase; }
-    .lfm-badge-label.idle { color:#555; }
-
-    /* ══════════════════════════════════════════════════
-       RIGHT SIDEBAR
-    ══════════════════════════════════════════════════ */
-    .right-col { display:flex; flex-direction:column; gap:10px; min-width:0; }
-
-    /* Habit-tracker style card */
-    .tracker-card { padding:15px 13px; display:flex; flex-direction:column; gap:11px; }
-    .tc-head { display:flex; align-items:center; justify-content:space-between; }
-    .tc-title { font-size:13px; font-weight:900; color:#fff; }
-    .tc-badge {
-      background:var(--glass); border:1px solid var(--glass-border);
-      border-radius:6px; padding:2px 8px;
-      font-size:9.5px; font-weight:800; color:var(--text-dim);
-    }
-    .tc-date { font-size:9px; font-weight:700; color:var(--text-mute); letter-spacing:.2px; }
-
-    /* Discord presence inside tracker card */
-    .dc-card {
-      display:flex; align-items:center; gap:10px;
-      padding:9px 11px; border-radius:12px; overflow:hidden; position:relative;
-      background:var(--glass); border:1px solid var(--glass-border);
-      backdrop-filter:blur(50px); -webkit-backdrop-filter:blur(50px);
-    }
-    #dcBanner {
-      position:absolute; inset:0;
-      background-size:cover; background-position:center;
-      filter:blur(28px) brightness(.15) saturate(1.2);
-      transform:scale(1.3); z-index:0; border-radius:12px;
-    }
-    .dc-avatar-wrap { position:relative; width:42px; height:42px; flex-shrink:0; z-index:1; }
-    .dc-avatar-wrap img { width:42px; height:42px; border-radius:50%; object-fit:cover; }
-    .dc-avatar-wrap img:not([src]),.dc-avatar-wrap img[src=""] { visibility:hidden; }
-    .dc-dot {
-      position:absolute; bottom:1px; right:1px;
-      width:12px; height:12px; border-radius:50%;
-      border:2.5px solid rgba(0,0,0,.7); background:#747f8d;
-    }
-    .dc-dot.online  { background:#23a55a; }
-    .dc-dot.idle    { background:#0a0a0a; border-color:#0a0a0a; box-shadow:inset 4px -2px 0 0 #f0b132; }
-    .dc-dot.dnd     { background:#f23f43; }
-    .dc-dot.offline { background:#747f8d; }
-    .dc-info { display:flex; flex-direction:column; gap:2px; z-index:1; }
-    .dc-name { font-size:13px; font-weight:700; color:#fff; letter-spacing:.3px; }
-    .dc-seen { font-size:9.5px; color:#666; }
-
-    /* Tracker item rows */
-    .tc-items { display:flex; flex-direction:column; gap:5px; }
-    .tc-item {
-      display:flex; align-items:center; gap:8px;
-      padding:5px 8px; border-radius:8px;
-      background:var(--glass); border:1px solid var(--glass-border);
-      font-size:9.5px; font-weight:700; color:var(--text-dim);
-    }
-    .tc-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.18); flex-shrink:0; }
-    .tc-dot.done { background:#00F2A0; box-shadow:0 0 5px #00F2A0; }
-    .tc-dot.live { background:#C724FF; box-shadow:0 0 5px #C724FF; animation:lfmPulse 1.4s ease-in-out infinite; }
-
-    /* Dark mode toggle (decorative — site is always dark) */
-    .dm-toggle {
-      display:flex; align-items:center; gap:9px;
-      padding:8px 10px; border-radius:10px;
-      background:var(--glass); border:1px solid var(--glass-border);
-      font-size:9.5px; font-weight:800; color:var(--text-dim);
-    }
-    .dm-track {
-      width:32px; height:16px; border-radius:8px;
-      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
-      position:relative;
-    }
-    .dm-thumb {
-      width:12px; height:12px; border-radius:50%;
-      background:rgba(255,255,255,.8); position:absolute;
-      right:2px; top:50%; transform:translateY(-50%);
-      box-shadow:0 0 6px rgba(255,255,255,.4);
-    }
-
-    /* Sigil 3D spinner */
-    .sigil-card { padding:10px 0 6px; display:flex; flex-direction:column; align-items:center; }
     .sigil-wrap {
       display:flex; justify-content:center; align-items:center;
-      height:80px; perspective:340px; position:relative; width:100%;
+      height:130px; perspective:400px; position:relative; width:100%;
     }
     #sigilCanvas {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%);
-      width:160px; height:160px; pointer-events:none; z-index:0;
+      width:240px; height:240px; pointer-events:none; z-index:0;
     }
     .sigil-3d  { display:flex; align-items:center; justify-content:center; transform-style:preserve-3d; z-index:1; }
     .sigil-img {
-      width:64px; height:auto; display:block;
+      width:96px; height:auto; display:block;
       mix-blend-mode:screen; transform-style:preserve-3d;
-      animation:spinY 3.6s linear infinite, sigilPulse 2.5s ease-in-out infinite;
+      animation: spinY 4s linear infinite, sigilPulse 2s ease-in-out infinite;
+      animation-delay: 0s, 0s;
     }
     @keyframes spinY    { from{transform:rotateY(0deg)} to{transform:rotateY(360deg)} }
     @keyframes sigilPulse {
@@ -535,124 +377,291 @@
       50%     { filter:invert(1) brightness(30) drop-shadow(0 0 14px #fff) drop-shadow(0 0 28px rgba(255,255,255,.4)); }
     }
 
+    /* Extra sigils */
+    .sigil-extra {
+      width: 62px; height: auto; display: block;
+      mix-blend-mode: screen; transform-style: preserve-3d;
+      filter: invert(1) brightness(30) drop-shadow(0 0 3px #fff);
+      position: absolute; top: 50%; transform: translateY(-50%);
+    }
+    .sigil-extra.s1 { left: 0;    animation: spinY 4s linear infinite reverse, sigilPulse 2s ease-in-out infinite; animation-delay: 0s, 0s; }
+    .sigil-extra.s2 { left: 26px; animation: spinY 4s linear infinite,         sigilPulse 2s ease-in-out infinite; animation-delay: 0s, 0s; opacity:.7; }
+    .sigil-extra.s3 { right: 0;   animation: spinY 4s linear infinite,         sigilPulse 2s ease-in-out infinite; animation-delay: 0s, 0s; }
+    .sigil-extra.s4 { right: 26px;animation: spinY 4s linear infinite reverse, sigilPulse 2s ease-in-out infinite; animation-delay: 0s, 0s; opacity:.7; }
+
+    /* ── BOTTOM SECTION ── */
+    .bottom-section { display:flex; flex-direction:column; gap:10px; }
+
+    /* Laveyan lyrics */
+    #lyrics { text-align:center; min-height:18px; padding:0 6px; }
+    #lyrTxt {
+      display:inline-block; opacity:0; transition:opacity .2s ease;
+      font-size:12px; font-weight:700; letter-spacing:.4px;
+    }
+
+    /* ══ 4 SOCIAL CARDS ══ */
+    .social-cards {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:10px;
+    }
+    .scard {
+      display:flex; flex-direction:column; gap:16px;
+      padding:22px 16px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--glass-bg);
+      border: 1px solid rgba(255,255,255,0.20);
+      backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      box-shadow: var(--shadow-card),
+                  inset 0 1px 0 rgba(255,255,255,0.18),
+                  inset 0 -1px 0 rgba(255,255,255,0.04);
+      text-decoration:none; color:#fff;
+      position:relative; overflow:hidden;
+      transition: background .2s, transform .18s, border-color .2s, box-shadow .2s;
+      cursor:pointer;
+    }
+    /* B&W heartbeat top border */
+    .scard::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      border-radius:14px 14px 0 0;
+      background: linear-gradient(90deg, #fff, #555, #fff, #888, #fff);
+      background-size: 400% auto;
+      box-shadow: 0 0 8px rgba(255,255,255,0.45);
+      animation: shiftBW 2s ease-in-out infinite;
+    }
+    @keyframes shiftBW {
+      0%   { background-position: 0% center; }
+      8%   { background-position: 100% center; }
+      16%  { background-position: 0% center; }
+      24%  { background-position: 100% center; }
+      32%  { background-position: 0% center; }
+      100% { background-position: 0% center; }
+    }
+    .scard:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(255,255,255,0.28);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover),
+                  inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .scard:active { transform:scale(.978); }
+
+    .scard-bg { display: none; }
+    .scard-top {
+      position:relative; z-index:1;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .scard-av {
+      width:64px; height:64px; border-radius:50%; overflow:hidden;
+      border:1.5px solid rgba(255,255,255,.20);
+      background:rgba(255,255,255,.06); flex-shrink:0;
+    }
+    .scard-av img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .4s; }
+    .scard-av img:not([src]),.scard-av img[src=""] { opacity:0; }
+    .scard-ico { width:24px; height:24px; }
+    .scard-ico svg { width:100%; height:100%; fill:rgba(255,255,255,.38); transition:fill .18s; }
+    .scard:hover .scard-ico svg { fill:rgba(255,255,255,.90); }
+    .scard-info { position:relative; z-index:1; }
+    .scard-name {
+      font-size:16px; font-weight:800;
+      letter-spacing:.1px; line-height:1.2;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .scard-sub {
+      font-size:13px; font-weight:600;
+      letter-spacing:.2px; margin-top:4px;
+    }
+    /* B&W heartbeat top border — all platforms uniform */
+    .scard::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      border-radius:14px 14px 0 0;
+      background: linear-gradient(90deg, #fff, #555, #fff, #888, #fff);
+      background-size: 400% auto;
+      box-shadow: 0 0 8px rgba(255,255,255,0.45);
+      animation: shiftBW 2s ease-in-out infinite;
+    }
+    @keyframes shiftBW {
+      0%   { background-position: 0% center; }
+      8%   { background-position: 100% center; }
+      16%  { background-position: 0% center; }
+      24%  { background-position: 100% center; }
+      32%  { background-position: 0% center; }
+      100% { background-position: 0% center; }
+    }
+    /* ══ SECT TABS (layout compat) ══ */
+    .sect-header { display:flex; align-items:center; gap:8px; padding:0 2px; }
+    .sect-title { font-size:13px; font-weight:700; color:var(--text-dim); }
+    .sect-badge {
+      background:var(--glass); border:1px solid var(--glass-border);
+      border-radius:6px; padding:3px 10px;
+      font-size:11px; font-weight:800; color:var(--text);
+    }
+    .sect-tab {
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 8px;
+      transition: background .15s; padding: 0;
+    }
+    .sect-tab svg { width:14px; height:14px; fill:var(--text-dim); transition:fill .15s; animation:glowWhite 2s ease-in-out infinite; }
+    .sect-tab:hover svg, .sect-tab.active svg { fill:#fff; }
+    .sect-tab.active { background:rgba(255,255,255,.10); }
+
+    /* ══════════════════════════════════════════════════
+       RIGHT SIDEBAR
+    ══════════════════════════════════════════════════ */
+    .right-col { display:flex; flex-direction:column; gap:10px; min-width:0; }
+
+    /* Habit-tracker card */
+    .tracker-card { padding:20px 16px; display:flex; flex-direction:column; gap:13px; }
+    .tc-head { display:flex; align-items:center; justify-content:space-between; }
+    .tc-title { font-size:17px; font-weight:900; }
+    .tc-badge {
+      background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22);
+      border-radius:8px; padding:4px 11px;
+      font-size:12px; font-weight:800;
+    }
+    .tc-date { font-size:11px; font-weight:700; color:var(--text-mute); letter-spacing:.2px; }
+
+    /* Discord presence */
+    .dc-card {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 14px; border-radius: var(--radius-sm); overflow:hidden; position:relative;
+      background: rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+    #dcBanner { display: none; }
+    .dc-avatar-wrap { position:relative; width:50px; height:50px; flex-shrink:0; z-index:1; }
+    .dc-avatar-wrap img { width:50px; height:50px; border-radius:50%; object-fit:cover; }
+    .dc-avatar-wrap img:not([src]),.dc-avatar-wrap img[src=""] { visibility:hidden; }
+    .dc-dot {
+      position:absolute; bottom:1px; right:1px;
+      width:14px; height:14px; border-radius:50%;
+      border:2px solid rgba(0,0,0,.7); background:#747f8d;
+    }
+    .dc-dot.online  { background:#23a55a; }
+    .dc-dot.idle    { background:#0a0a0a; border-color:#0a0a0a; box-shadow:inset 3px -2px 0 0 #f0b132; }
+    .dc-dot.dnd     { background:#f23f43; }
+    .dc-dot.offline { background:#747f8d; }
+    .dc-info { display:flex; flex-direction:column; gap:4px; z-index:1; }
+    .dc-name { font-size:16px; font-weight:700; letter-spacing:.3px; }
+    .dc-seen { font-size:12px; color:#666; }
+
+    /* Tracker items */
+    .tc-items { display:flex; flex-direction:column; gap:7px; }
+    .tc-item {
+      display:flex; align-items:center; gap:10px;
+      padding:9px 13px; border-radius:11px;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      font-size:12px; font-weight:700; color:var(--text-dim);
+    }
+    .tc-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.18); flex-shrink:0; }
+    .tc-dot.done { background:#fff; box-shadow:0 0 7px rgba(255,255,255,0.7); }
+    .tc-dot.live { background:#fff; box-shadow:0 0 7px rgba(255,255,255,0.7); animation:lfmPulse 2s ease-in-out infinite; }
+
     /* Performance card */
-    .perf-card { padding:14px 13px; display:flex; flex-direction:column; gap:8px; }
-    .perf-label { font-size:10px; font-weight:800; color:var(--text-dim); letter-spacing:.3px; }
-    .perf-bar { width:100%; height:4px; border-radius:2px; background:rgba(255,255,255,.08); }
-    .perf-fill { height:100%; border-radius:2px; background:rgba(255,255,255,.8); width:40%; transition:width .6s ease; }
-    .perf-nums { font-size:26px; font-weight:900; color:#fff; line-height:1; display:flex; align-items:baseline; gap:3px; }
-    .perf-total { font-size:14px; color:var(--text-dim); }
-    .perf-sub { font-size:8.5px; color:var(--text-mute); font-weight:700; letter-spacing:.4px; }
+    .perf-card { padding:18px 16px; display:flex; flex-direction:column; gap:10px; }
+    .perf-label { font-size:13px; font-weight:800; color:var(--text-dim); letter-spacing:.3px; }
+    .perf-bar { width:100%; height:4px; border-radius:3px; background:rgba(255,255,255,.08); }
+    .perf-fill { height:100%; border-radius:3px; background:rgba(255,255,255,.85); width:40%; transition:width .6s ease; }
+    .perf-nums { font-size:30px; font-weight:900; color:#fff; line-height:1; display:flex; align-items:baseline; gap:4px; }
+    .perf-total { font-size:16px; color:var(--text-dim); }
+    .perf-sub { font-size:11px; color:var(--text-mute); font-weight:700; letter-spacing:.4px; }
 
     /* ══ ANIMATIONS ══ */
     @keyframes glowWhite {
-      0%   { fill:#fff; filter:drop-shadow(0 0 4px #fff); }
-      50%  { fill:#fff; filter:drop-shadow(0 0 10px #fff); }
-      100% { fill:#fff; filter:drop-shadow(0 0 4px #fff); }
+      0%   { fill:#fff; filter:drop-shadow(0 0 3px #fff); }
+      50%  { fill:#fff; filter:drop-shadow(0 0 9px #fff); }
+      100% { fill:#fff; filter:drop-shadow(0 0 3px #fff); }
     }
     @keyframes glowFade {
       0%,100% { opacity:.9; }
       50%     { opacity:.1; }
     }
-    @keyframes rainbowShift {
-      0%   { background-position:0% center; }
-      100% { background-position:200% center; }
-    }
     @keyframes lfmPulse {
       0%,100% { opacity:1; transform:scale(1); }
-      50%     { opacity:.3; transform:scale(.5); }
+      8%      { opacity:.15; transform:scale(.5); }
+      16%     { opacity:1; transform:scale(1); }
+      24%     { opacity:.15; transform:scale(.5); }
+      32%     { opacity:1; transform:scale(1); }
     }
 
     /* ══ RESPONSIVE ══ */
     @media (max-width:900px) {
+      :root { --sb-w: 54px; --rp-w: 200px; }
+      .dashboard {
+        gap: 8px;
+        width: 95%;
+      }
+    }
+    @media (max-width:820px) {
       .dashboard {
         grid-template-columns:1fr;
-        padding:10px 8px 24px;
+        padding:10px 0 18px;
+        gap: 8px;
+        width: 94%;
       }
       .sidebar {
         flex-direction:row; height:auto; width:100%;
         padding:10px 14px; position:static;
         justify-content:center;
       }
-      .sb-div { width:1px; height:22px; margin:0 6px; }
+      .sb-div { width:1px; height:24px; margin:0 6px; }
       .sb-label { display:none; }
       .right-col { order:2; }
       .social-cards { grid-template-columns:repeat(2,1fr); }
-      .hero-section { height:260px; }
-      .hero-gif-wrap { width:148px; height:148px; }
-      .lfm-hero-card { width:200px; }
-    }
-    @media (max-width:500px) {
-      .social-cards { grid-template-columns:1fr; }
       .hero-section { height:240px; }
-      .lfm-hero-card { width:calc(100% - 40px); }
-      .hero-text { max-width:140px; }
     }
-
-    /* ══ UNIVERSAL RAINBOW TEXT ══ */
-    .scard-name, .scard-sub, .lfm-h-track, .lfm-h-artist,
-    .lfm-h-uname, .lfm-h-scr, .tc-title, .dc-name,
-    .perf-nums > span:first-child, .nav-user-name, .tc-badge,
-    .lfm-badge-label, .lfm-h-label {
-      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
-      background-size: 200% auto;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: rainbowShift 4s linear infinite;
+    @media (max-width:480px) {
+      .social-cards { grid-template-columns:1fr; }
+      .hero-section { height:200px; }
+      .lfm-hero-card { width:calc(100% - 32px); }
+      :root { --rp-w: 100%; }
     }
-    .nav-brand { animation: rainbowShift 4s linear infinite; }
-    .lfm-badge-label { color: unset; }
-    .lfm-h-label { color: unset; }
 
     /* ══ MUSIC MODAL ══ */
     .lfm-modal-overlay {
       position: fixed; inset: 0; z-index: 600;
-      backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
-      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      background: rgba(0,0,0,0.40);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.28s ease;
     }
     .lfm-modal-overlay.open { opacity: 1; pointer-events: auto; }
-
     .lfm-modal-card {
       position: relative;
-      background: rgba(8,8,8,0.85);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      border-radius: 22px;
-      padding: 22px 18px 18px;
-      width: 340px; max-width: 92vw;
-      backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
-      display: flex; flex-direction: column; gap: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 20px;
+      padding: 16px 14px 13px;
+      width: 300px; max-width: 90vw;
+      backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.4) brightness(1.02);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.30),
+                  inset 0 1px 0 rgba(255,255,255,0.18);
+      display: flex; flex-direction: column; gap: 8px;
     }
-
     .lfm-modal-close {
-      position: absolute; top: 12px; right: 14px;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
+      position: absolute; top: 10px; right: 12px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
       cursor: pointer; color: rgba(255,255,255,0.6);
-      font-size: 13px; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
     }
-    .lfm-modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
+    .lfm-modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
     .lfm-modal-header {
-      display: flex; align-items: center; gap: 7px;
-      margin-bottom: 4px;
+      display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
     }
     .lfm-modal-title {
       font-size: 8px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
-      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
-      background-size: 200% auto;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: rainbowShift 4s linear infinite;
     }
-
     .lfm-modal-row {
-      display: flex; align-items: center; gap: 11px;
-      padding: 11px 14px;
-      border: 1.5px solid rgba(255,255,255,0.10);
-      border-radius: 50px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 46px;
       background: rgba(255,255,255,0.03);
       text-decoration: none;
       transition: background 0.2s, border-color 0.2s, transform 0.15s;
@@ -660,64 +669,62 @@
     }
     .lfm-modal-row:hover {
       background: rgba(255,255,255,0.07);
-      border-color: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.18);
       transform: translateX(2px);
     }
-    .lfm-modal-row::before {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(255,255,255,0); transition: background 0.2s;
-      border-radius: 50px;
-    }
-
     .lfm-modal-ic {
-      width: 26px; height: 26px; flex-shrink: 0;
+      width: 22px; height: 22px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .lfm-modal-ic svg { width: 22px; height: 22px; fill: rgba(255,255,255,0.75); }
-
+    .lfm-modal-ic svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.70); }
     .lfm-modal-artist {
-      font-size: 11px; font-weight: 800; flex-shrink: 0; white-space: nowrap;
-      background: linear-gradient(90deg,#fff,#ddd,#888,#444,#888,#ddd,#fff,#fff);
-      background-size: 200% auto;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: rainbowShift 4s linear infinite;
+      font-size: 9.5px; font-weight: 800; flex-shrink: 0; white-space: nowrap;
+      color: rgba(255,255,255,0.78);
+      animation: textGlowPulse 2s ease-in-out infinite;
     }
-
     .lfm-modal-track {
-      font-size: 11px; font-weight: 700;
+      font-size: 9.5px; font-weight: 700;
       margin-left: auto; text-align: right; flex: 1; min-width: 0;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      background: linear-gradient(90deg,#C724FF,#d44fff,#a020d0,#7a0099,#C724FF,#d44fff,#C724FF);
-      background-size: 200% auto;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: rainbowShift 4s linear infinite reverse;
+      color: rgba(255,255,255,0.70);
+      animation: textGlowPulse 2s ease-in-out infinite reverse;
     }
 
-    /* ══ SECT TAB BUTTONS ══ */
-    .sect-tab {
-      background: transparent; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px; border-radius: 8px;
-      transition: background .15s;
-      padding: 0;
+    /* ══ LAST.FM BOTTOM CARD EXTRAS ══ */
+    .scard-lfm-extra {
+      position:relative; z-index:1;
+      display:flex; align-items:center; gap:6px;
+      padding-top:7px; border-top:1px solid rgba(255,255,255,.07);
     }
-    .sect-tab svg { width: 15px; height: 15px; fill: var(--text-dim); transition: fill .15s; animation: glowWhite 2.5s ease-in-out infinite; }
-    .sect-tab:hover svg, .sect-tab.active svg { fill: #fff; }
-    .sect-tab.active { background: rgba(255,255,255,.10); }
+    .lfm-album-art {
+      width:26px; height:26px; border-radius:4px; flex-shrink:0;
+      object-fit:cover; background:rgba(255,255,255,.06); transition:opacity .5s;
+    }
+    .lfm-album-art:not([src]),.lfm-album-art[src=""] { opacity:0; }
+    .lfm-track-info { flex:1; min-width:0; }
+    .lfm-track-name   { font-size:9.5px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lfm-artist-name  { font-size:8.5px; font-weight:600; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lfm-dot { width:5px; height:5px; border-radius:50%; background:#fff; box-shadow:0 0 5px #fff; animation:lfmPulse 2s ease-in-out infinite; flex-shrink:0; }
+    .lfm-dot.idle { background:#444; box-shadow:none; animation:none; }
+    .lfm-badge-label { font-size:7px; font-weight:900; letter-spacing:.8px; text-transform:uppercase; }
+    .lfm-badge-label.idle { color:#555 !important; text-shadow:none !important; animation:none !important; }
 
-    /* ══ EXTRA SIGILS ══ */
-    .sigil-wrap { position: relative; width: 100%; }
-    .sigil-extra {
-      width: 42px; height: auto; display: block;
-      mix-blend-mode: screen; transform-style: preserve-3d;
-      filter: invert(1) brightness(30) drop-shadow(0 0 3px #fff);
-      position: absolute; top: 50%; transform: translateY(-50%);
-      animation: sigilPulse 2.5s ease-in-out infinite;
+    /* ══ iOS-LIKE PULL DOWN FEEL ══ */
+    .main-col, .right-col {
+      will-change: transform;
     }
-    .sigil-extra.s1 { left: 0;   animation: spinY 4.4s linear infinite reverse, sigilPulse 2.8s ease-in-out infinite; }
-    .sigil-extra.s2 { left: 18px; animation: spinY 3.2s linear infinite, sigilPulse 2.2s ease-in-out infinite 0.4s; opacity:.7; }
-    .sigil-extra.s3 { right: 0;  animation: spinY 5s linear infinite, sigilPulse 3s ease-in-out infinite 0.8s; }
-    .sigil-extra.s4 { right: 18px; animation: spinY 3.8s linear infinite reverse, sigilPulse 2.5s ease-in-out infinite 1.2s; opacity:.7; }
+    @supports (-webkit-overflow-scrolling: touch) {
+      body { -webkit-overflow-scrolling: touch; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       DYNAMIC PALETTE OVERRIDES — updated via JS
+       NOTE: glass-bg stays neutral white; only glow/accent uses palette
+    ══════════════════════════════════════════════════ */
+    .lfm-hero-card {
+      border-color: var(--dyn-border-a) !important;
+    }
+    .lfm-h-foot    { border-top-color: var(--dyn-border-b) !important; }
 
   </style>
 </head>
@@ -729,31 +736,30 @@
 </div>
 
 <!-- ════════════ BG ════════════ -->
-<img id="bgGif" src="https://raw.githubusercontent.com/ans1a/lofi/refs/heads/main/bgp.gif" alt="" loading="lazy">
+<img id="bgGif" src="https://raw.githubusercontent.com/ans1a/ans1a.github.io/refs/heads/main/bgp.gif" alt="" loading="lazy">
 <div id="overlay"></div>
 
 <!-- ════════════════════════════════════════════════
-     DASHBOARD (id="card" for reveal + anchor)
+     DASHBOARD
 ════════════════════════════════════════════════ -->
 <div class="dashboard" id="card">
 
   <!-- ── LEFT SIDEBAR ── -->
-  <aside class="sidebar glass">
-    <!-- Home anchor — clicking "ansia - a's" name in nav goes here -->
+  <aside class="sidebar">
     <a class="sb-icon active" href="#card" aria-label="Home">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     </a>
     <div class="sb-div"></div>
-    <a class="sb-icon" href="https://www.tiktok.com/@due1o" target="_blank" rel="noopener" aria-label="TikTok">
+    <a class="sb-icon" href="tiktok.html" aria-label="TikTok">
       <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
     </a>
-    <a class="sb-icon" href="https://github.com/ans1a" target="_blank" rel="noopener" aria-label="GitHub">
+    <a class="sb-icon" href="github.html" aria-label="GitHub">
       <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
     </a>
-    <a class="sb-icon" href="https://www.instagram.com/ea6ts" target="_blank" rel="noopener" aria-label="Instagram">
+    <a class="sb-icon" href="instagram.html" aria-label="Instagram">
       <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
     </a>
-    <a class="sb-icon" href="https://www.last.fm/user/guzrr" target="_blank" rel="noopener" aria-label="Last.fm">
+    <a class="sb-icon" href="lastfm.html" aria-label="Last.fm">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M289.8 431.1L271 380.1C271 380.1 240.5 414.1 194.8 414.1C154.3 414.1 125.6 378.9 125.6 322.6C125.6 250.5 162 224.7 197.7 224.7C264.2 224.7 272.5 278 298.6 359.6C317.4 416.5 352.6 462.2 454 462.2C526.7 462.2 576 439.9 576 381.3C576 308.4 513.3 300.7 461 289.2C435.2 283.3 427.6 272.8 427.6 255.2C427.6 235.3 443.4 223.5 469.2 223.5C497.4 223.5 512.6 234.1 514.9 259.3L573.5 252.3C568.8 199.5 532.4 177.8 472.6 177.8C419.8 177.8 368.2 197.7 368.2 261.7C368.2 301.6 387.6 326.8 436.2 338.5C481.1 349.1 516 352.3 516 384.2C516 405.9 494.9 414.7 455 414.7C395.8 414.7 371.1 383.6 357.1 340.8C325.1 244 313.5 177.8 195.8 177.8C109.7 177.8 64 232.3 64 325C64 414.1 109.7 462.2 191.9 462.2C258.1 462.2 289.8 431.1 289.8 431.1z"/></svg>
     </a>
     <span class="sb-label">paid</span>
@@ -762,23 +768,18 @@
   <!-- ── MAIN COLUMN ── -->
   <main class="main-col">
 
-
-
-    <!-- HERO SECTION (bgs.gif background, GIF center, Last.fm top-center, text top-left) -->
-    <section class="hero-section glass">
-
-      <!-- Banner background -->
-      <img class="hero-bg" src="https://raw.githubusercontent.com/ans1a/lofi/refs/heads/main/bgs.gif" alt="" loading="lazy">
+    <!-- ── HERO SECTION ── -->
+    <section class="hero-section">
+      <img class="hero-bg" src="https://raw.githubusercontent.com/ans1a/ans1a.github.io/refs/heads/main/bgs.gif" alt="" loading="lazy">
       <div class="hero-overlay-fade"></div>
 
-      <!-- Audio volume controls (top-left) -->
-      <div id="audioControls" style="left:14px">
+      <!-- Audio volume controls -->
+      <div id="audioControls" style="left:12px">
         <span id="volPct">100%</span>
         <div id="volTrack"><div id="volFill"></div><div id="volHandle"></div></div>
       </div>
 
-
-      <!-- Title strip + sparkles — bottom-right overlay -->
+      <!-- Title strip — bottom-right -->
       <div class="hero-title-strip">
         <div class="hero-title-wrap">
           <canvas id="sparkleCanvas"></canvas>
@@ -786,10 +787,9 @@
           <div class="hero-title">ANSIA — A'S</div>
         </div>
       </div>
-
     </section>
 
-    <!-- LAST.FM MINI-PLAYER — standalone clickable card -->
+    <!-- ── LAST.FM MINI-PLAYER — standalone ── -->
     <div class="lfm-hero-card lfm-standalone" onclick="openLfmModal()" style="cursor:pointer" title="Ver onde ouvir">
       <div class="lfm-h-row">
         <img class="lfm-h-art" id="lfm-h-art" src="" alt="">
@@ -809,47 +809,41 @@
       </div>
     </div>
 
-    <!-- BOTTOM SECTION: lyrics + 4 social cards -->
-    <section class="bottom-section" style="padding:14px 14px 16px; background:rgba(6,6,6,0.45); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); backdrop-filter:blur(50px); -webkit-backdrop-filter:blur(50px)">
+    <!-- ── SIGILS — BELOW HERO (moved from right col) ── -->
+    <div class="sigil-row">
+      <div class="sigil-wrap">
+        <canvas id="sigilCanvas"></canvas>
+        <img src="sigil1.jpg" class="sigil-extra s1" alt="">
+        <img src="sigil2.png" class="sigil-extra s2" alt="">
+        <div class="sigil-3d">
+          <img src="sigil3.jpg" class="sigil-img" alt="sigil">
+        </div>
+        <img src="sigil4.png" class="sigil-extra s3" alt="">
+        <img src="sigil5.jpg" class="sigil-extra s4" alt="">
+      </div>
+    </div>
+
+    <!-- ── BOTTOM SECTION: lyrics + 4 social cards ── -->
+    <section class="bottom-section" style="padding:16px 16px 18px; background:var(--glass-bg); border:1px solid rgba(255,255,255,0.20); border-radius:var(--radius); backdrop-filter:blur(var(--blur-heavy)) saturate(1.4) brightness(1.02); -webkit-backdrop-filter:blur(var(--blur-heavy)) saturate(1.4) brightness(1.02); box-shadow:0 6px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.18)">
 
       <div class="sect-header">
         <span class="sect-title" id="timeOfDayLabel">Daily</span>
         <span class="sect-badge" id="timeOfDayBadge">summary</span>
-        <!-- Icon row (right side of header) — TAB selectors -->
-        <div class="sect-icons">
-          <button class="sect-tab active" data-tab="all" aria-label="Todos" onclick="switchTab('all',this)">
-            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-          </button>
-          <button class="sect-tab" data-tab="tiktok" aria-label="TikTok" onclick="switchTab('tiktok',this)">
-            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
-          </button>
-          <button class="sect-tab" data-tab="github" aria-label="GitHub" onclick="switchTab('github',this)">
-            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          </button>
-          <button class="sect-tab" data-tab="insta" aria-label="Instagram" onclick="switchTab('insta',this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-          </button>
-          <button class="sect-tab" data-tab="lastfm" aria-label="Last.fm" onclick="switchTab('lastfm',this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M289.8 431.1L271 380.1C271 380.1 240.5 414.1 194.8 414.1C154.3 414.1 125.6 378.9 125.6 322.6C125.6 250.5 162 224.7 197.7 224.7C264.2 224.7 272.5 278 298.6 359.6C317.4 416.5 352.6 462.2 454 462.2C526.7 462.2 576 439.9 576 381.3C576 308.4 513.3 300.7 461 289.2C435.2 283.3 427.6 272.8 427.6 255.2C427.6 235.3 443.4 223.5 469.2 223.5C497.4 223.5 512.6 234.1 514.9 259.3L573.5 252.3C568.8 199.5 532.4 177.8 472.6 177.8C419.8 177.8 368.2 197.7 368.2 261.7C368.2 301.6 387.6 326.8 436.2 338.5C481.1 349.1 516 352.3 516 384.2C516 405.9 494.9 414.7 455 414.7C395.8 414.7 371.1 383.6 357.1 340.8C325.1 244 313.5 177.8 195.8 177.8C109.7 177.8 64 232.3 64 325C64 414.1 109.7 462.2 191.9 462.2C258.1 462.2 289.8 431.1 289.8 431.1z"/></svg>
-          </button>
-        </div>
       </div>
 
-      <!-- Laveyan lyrics rotator (small, rainbow gradient) -->
+      <!-- Laveyan lyrics rotator -->
       <div id="lyrics"><span id="lyrTxt"></span></div>
 
-      <!-- 4 SOCIAL CARDS: TikTok · GitHub · Instagram · Last.fm (SoundCloud removed) -->
+      <!-- 4 SOCIAL CARDS -->
       <div class="social-cards">
 
-        <!-- TikTok — accent: #00F2A0 -->
+        <!-- TikTok -->
         <a class="scard tiktok" href="https://www.tiktok.com/@due1o" target="_blank" rel="noopener">
           <div class="scard-bg" id="ttk-bg"></div>
           <div class="scard-top">
             <div class="scard-av">
-              <img id="ttk-av" src="https://unavatar.io/tiktok/due1o" alt=""
-                loading="lazy"
-                onerror="this.src='https://i.imgur.com/NbcUm3V.gif'"
-                onload="document.getElementById('ttk-bg').style.backgroundImage='url('+this.src+')'">
+              <img id="ttk-av" src="https://unavatar.io/tiktok/due1o" alt="" loading="lazy"
+                onerror="this.src='https://i.imgur.com/NbcUm3V.gif'">
             </div>
             <div class="scard-ico">
               <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
@@ -861,14 +855,12 @@
           </div>
         </a>
 
-        <!-- GitHub — accent: #FF2D55 -->
+        <!-- GitHub -->
         <a class="scard github" href="https://github.com/ans1a" target="_blank" rel="noopener">
           <div class="scard-bg" id="gh-bg"></div>
           <div class="scard-top">
             <div class="scard-av">
-              <img id="gh-av" src="https://avatars.githubusercontent.com/ans1a" alt=""
-                loading="lazy"
-                onload="document.getElementById('gh-bg').style.backgroundImage='url('+this.src+')'">
+              <img id="gh-av" src="https://avatars.githubusercontent.com/ans1a" alt="" loading="lazy">
             </div>
             <div class="scard-ico">
               <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
@@ -880,15 +872,13 @@
           </div>
         </a>
 
-        <!-- Instagram — accent: #00A2FF — username changed to @ea6ts -->
+        <!-- Instagram -->
         <a class="scard insta" href="https://www.instagram.com/ea6ts" target="_blank" rel="noopener">
           <div class="scard-bg" id="ig-bg"></div>
           <div class="scard-top">
             <div class="scard-av">
-              <img id="ig-av" src="https://unavatar.io/instagram/ea6ts" alt=""
-                loading="lazy"
-                onerror="this.src='https://i.imgur.com/NbcUm3V.gif'"
-                onload="document.getElementById('ig-bg').style.backgroundImage='url('+this.src+')'">
+              <img id="ig-av" src="https://unavatar.io/instagram/ea6ts" alt="" loading="lazy"
+                onerror="this.src='https://i.imgur.com/NbcUm3V.gif'">
             </div>
             <div class="scard-ico">
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
@@ -900,7 +890,7 @@
           </div>
         </a>
 
-        <!-- Last.fm — accent: #C724FF — expanded with now-playing row -->
+        <!-- Last.fm -->
         <a class="scard lastfm" href="https://www.last.fm/user/guzrr" target="_blank" rel="noopener">
           <div class="scard-bg" id="lfm-card-bg"></div>
           <div class="scard-top">
@@ -926,7 +916,7 @@
   <!-- ── RIGHT SIDEBAR ── -->
   <aside class="right-col">
 
-    <!-- Habit-tracker panel (mirrors top-right from print 2) -->
+    <!-- Habit-tracker panel -->
     <div class="tracker-card glass">
       <div class="tc-head">
         <span class="tc-title">Habit</span>
@@ -934,22 +924,22 @@
       </div>
       <div class="tc-date" id="trackerDate"></div>
 
-      <!-- Discord presence widget -->
+      <!-- Discord presence -->
       <div class="dc-card">
         <div id="dcBanner"></div>
         <div class="dc-avatar-wrap">
           <img id="dcAvatar" src="" alt=""
             onerror="this.style.visibility='hidden'"
-            onload="this.style.visibility='visible';var b=document.getElementById('dcBanner');if(b)b.style.backgroundImage='url('+this.src+')'">
+            onload="this.style.visibility='visible'">
           <span id="dcDot" class="dc-dot offline"></span>
         </div>
         <div class="dc-info">
-          <span class="dc-name">5z7w</span>
+          <span class="dc-name">d6xj</span>
           <span id="dcSeen" class="dc-seen"></span>
         </div>
       </div>
 
-      <!-- Tracker item rows -->
+      <!-- Tracker items -->
       <div class="tc-items">
         <div class="tc-item">
           <div class="tc-dot live" id="lfm-tc-dot"></div>
@@ -968,27 +958,9 @@
           <span>TikTok: @due1o</span>
         </div>
       </div>
-
-      <!-- Dark mode toggle (always dark — decorative) -->
-      <div class="dm-toggle">
-        <span>Dark Mode</span>
-        <div class="dm-track"><div class="dm-thumb"></div></div>
-      </div>
     </div>
 
-    <!-- 3D spinning sigil + sparkle canvas -->
-<div class="sigil-wrap">
-  <canvas id="sigilCanvas"></canvas>
-  <img src="sigil1.jpg" class="sigil-extra s1" alt="">
-  <img src="sigil2.png" class="sigil-extra s2" alt="">
-  <div class="sigil-3d">
-    <img src="sigil3.jpg" class="sigil-img" alt="sigil">
-  </div>
-  <img src="sigil4.png" class="sigil-extra s3" alt="">
-  <img src="sigil5.jpg" class="sigil-extra s4" alt="">
-</div>
-
-    <!-- Performance card: shows Last.fm scrobble count -->
+    <!-- Performance card -->
     <div class="perf-card glass">
       <div class="perf-label">Performance</div>
       <div class="perf-bar"><div class="perf-fill" id="perfFill"></div></div>
@@ -1012,7 +984,7 @@
       <span class="lfm-modal-title" id="modal-now-label">LAST PLAYED</span>
     </div>
 
-    <!-- Row 1: YouTube Music -->
+    <!-- YouTube Music -->
     <a id="lfm-yt-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
       <div class="lfm-modal-ic">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
@@ -1023,7 +995,7 @@
       <span class="lfm-modal-track" id="modal-track1">—</span>
     </a>
 
-    <!-- Row 2: Spotify -->
+    <!-- Spotify -->
     <a id="lfm-sp-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
       <div class="lfm-modal-ic">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
@@ -1034,7 +1006,7 @@
       <span class="lfm-modal-track" id="modal-track2">—</span>
     </a>
 
-    <!-- Row 3: SoundCloud -->
+    <!-- SoundCloud -->
     <a id="lfm-sc-link" class="lfm-modal-row" href="#" target="_blank" rel="noopener">
       <div class="lfm-modal-ic" style="width:34px">
         <svg fill="currentColor" viewBox="-271 345.8 256 111.2" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:17px">
@@ -1055,16 +1027,312 @@
 
 <script>
 /* ════════════════════════════════════════════════
-   INTRO TIMER — fade out after 2.8s then reveal dashboard
+   WALLPAPER DYNAMIC COLOR SYSTEM
+   Extracts dominant hues from the body background
+   and applies them as CSS variables across the UI.
+════════════════════════════════════════════════ */
+(function() {
+  var WALLPAPER_URL = 'https://raw.githubusercontent.com/ans1a/ans1a.github.io/refs/heads/main/bgp.gif';
+  var SAMPLE_SIZE   = 64;
+  var root          = document.documentElement;
+  var _styleEl      = null;
+
+  /* ─── luminance ─── */
+  function lum(r, g, b) { return 0.299*r + 0.587*g + 0.114*b; }
+
+  /* ─── relative luminance for WCAG contrast ─── */
+  function relLum(r, g, b) {
+    function c(v) { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); }
+    return 0.2126*c(r) + 0.7152*c(g) + 0.0722*c(b);
+  }
+
+  /* ─── contrast ratio ─── */
+  function contrast(l1, l2) {
+    var brt = Math.max(l1, l2), drk = Math.min(l1, l2);
+    return (brt + 0.05) / (drk + 0.05);
+  }
+
+  /* ─── rgb → hsl ─── */
+  function toHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var max = Math.max(r,g,b), min = Math.min(r,g,b), d = max - min, h = 0, s = 0, l = (max+min)/2;
+    if (d > 0) {
+      s = d / (1 - Math.abs(2*l - 1));
+      if (max === r)      h = ((g-b)/d + 6) % 6;
+      else if (max === g) h = (b-r)/d + 2;
+      else                h = (r-g)/d + 4;
+      h /= 6;
+    }
+    return [h, s, l];
+  }
+
+  /* ─── hsl → rgb ─── */
+  function fromHsl(h, s, l) {
+    var c = (1 - Math.abs(2*l-1))*s, x = c*(1-Math.abs((h*6)%2-1)), m = l - c/2;
+    var r=0,g=0,b=0;
+    if      (h<1/6) { r=c; g=x; }
+    else if (h<2/6) { r=x; g=c; }
+    else if (h<3/6) { g=c; b=x; }
+    else if (h<4/6) { g=x; b=c; }
+    else if (h<5/6) { r=x; b=c; }
+    else            { r=c; b=x; }
+    return [Math.round((r+m)*255), Math.round((g+m)*255), Math.round((b+m)*255)];
+  }
+
+  /* ─── adjust saturation for glass use:
+       high-sat  → dampen (keeps glass subtle, avoids neon overload)
+       low-sat   → boost  (makes muted tones visible)            ─── */
+  function boostColor(r, g, b) {
+    var hsl = toHsl(r, g, b);
+    var s, l;
+    if (hsl[1] > 0.60) {
+      s = Math.max(0.38, hsl[1] * 0.58);   /* heavily damp vivid colors */
+    } else if (hsl[1] > 0.30) {
+      s = Math.min(0.72, hsl[1] * 1.20 + 0.08); /* gentle boost for mid range */
+    } else {
+      s = Math.min(0.65, hsl[1] * 1.60 + 0.14); /* boost muted/desaturated */
+    }
+    l = Math.max(0.30, Math.min(0.68, hsl[2]));
+    return fromHsl(hsl[0], s, l);
+  }
+
+  /* ─── extract dominant palette from pixel array ─── */
+  function extractPalette(data) {
+    var HUE_BUCKETS = 48;
+    var buckets = [];
+    for (var i = 0; i < HUE_BUCKETS; i++) buckets.push({ n:0, r:0, g:0, b:0 });
+
+    for (var p = 0; p < data.length; p += 4) {
+      var r = data[p], g = data[p+1], b = data[p+2], a = data[p+3];
+      if (a < 180) continue;
+      var L = lum(r, g, b);
+      if (L < 18 || L > 238) continue;         /* skip near-black / near-white */
+      var hsl = toHsl(r, g, b);
+      if (hsl[1] < 0.12) continue;             /* skip grays */
+      var bi = Math.floor(hsl[0] * HUE_BUCKETS) % HUE_BUCKETS;
+      buckets[bi].n++; buckets[bi].r += r; buckets[bi].g += g; buckets[bi].b += b;
+    }
+
+    /* sort by count, pick most distinct colors */
+    var sorted = buckets
+      .map(function(bk, i) { return { bk: bk, i: i }; })
+      .filter(function(x) { return x.bk.n > 0; })
+      .sort(function(a, b) { return b.bk.n - a.bk.n; });
+
+    var picked = [];
+    for (var j = 0; j < sorted.length && picked.length < 4; j++) {
+      var bk = sorted[j].bk;
+      var avg = [Math.round(bk.r/bk.n), Math.round(bk.g/bk.n), Math.round(bk.b/bk.n)];
+      var ok  = true;
+      for (var k = 0; k < picked.length; k++) {
+        var dr = avg[0]-picked[k][0], dg = avg[1]-picked[k][1], db = avg[2]-picked[k][2];
+        if (Math.sqrt(dr*dr + dg*dg + db*db) < 55) { ok = false; break; }
+      }
+      if (ok) picked.push(avg);
+    }
+    return picked;
+  }
+
+  /* ─── build glass rgba strings ─── */
+  function rgba(c, a) { return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
+  function rgb(c)      { return 'rgb('+c[0]+','+c[1]+','+c[2]+')'; }
+
+  /* ─── glow intensity: inversely proportional to raw saturation
+       sat ≤ 0.38  → gf = 1.0   (full, fixed glow)
+       sat = 0.70  → gf ≈ 0.48
+       sat = 1.00  → gf = 0.12  (minimal — highly vivid colors get almost no glow) ─── */
+  function calcGlowFactor(r, g, b) {
+    var sat = toHsl(r, g, b)[1];
+    if (sat <= 0.38) return 1.0;
+    /* aggressive quadratic falloff above threshold */
+    var t = (sat - 0.38) / 0.62;           /* 0→1 as sat goes 0.38→1 */
+    return Math.max(0.12, 1.0 - t * t * 0.88);
+  }
+
+  /* ─── inject / update dynamic @keyframes + element overrides ─── */
+  function injectStyles(a, s2, p, gf) {
+    if (!_styleEl) {
+      _styleEl = document.createElement('style');
+      _styleEl.id = 'dynPaletteKF';
+      document.head.appendChild(_styleEl);
+    }
+    /* scale helper — clamps alpha by glowFactor */
+    function g(base) { return Math.min(1, base * gf); }
+    /* blur-px also scaled so vivid colors don't spray too wide */
+    function px(base) { return Math.round(base * (0.4 + gf * 0.6)) + 'px'; }
+
+    _styleEl.textContent = [
+      /* textGlowPulse → accent hue glow */
+      '@keyframes textGlowPulse {',
+      '  0%   { color:rgba(255,255,255,0.72); text-shadow:0 0 '+px(4)+' '+rgba(a,g(0.22))+'; }',
+      '  12%  { color:#fff; text-shadow:0 0 '+px(8)+' '+rgba(a,g(0.95))+', 0 0 '+px(18)+' '+rgba(a,g(0.52))+', 0 0 '+px(34)+' '+rgba(a,g(0.24))+'; }',
+      '  19%  { color:rgba(255,255,255,0.58); text-shadow:none; }',
+      '  26%  { color:rgba(255,255,255,0.90); text-shadow:0 0 '+px(6)+' '+rgba(a,g(0.78))+', 0 0 '+px(14)+' '+rgba(a,g(0.38))+'; }',
+      '  34%  { color:rgba(255,255,255,0.68); text-shadow:0 0 '+px(3)+' '+rgba(a,g(0.15))+'; }',
+      '  100% { color:rgba(255,255,255,0.72); text-shadow:0 0 '+px(4)+' '+rgba(a,g(0.22))+'; }',
+      '}',
+      /* SVG icon glow */
+      '@keyframes glowWhite {',
+      '  0%   { fill:#fff; filter:drop-shadow(0 0 '+px(3)+' '+rgba(a,g(0.85))+'); }',
+      '  50%  { fill:#fff; filter:drop-shadow(0 0 '+px(10)+' '+rgba(a,g(0.85))+'); }',
+      '  100% { fill:#fff; filter:drop-shadow(0 0 '+px(3)+' '+rgba(a,g(0.85))+'); }',
+      '}',
+      /* sigil pulse */
+      '@keyframes sigilPulse {',
+      '  0%,100% { filter:invert(1) brightness(30) drop-shadow(0 0 3px #fff); }',
+      '  50%     { filter:invert(1) brightness(30) drop-shadow(0 0 '+px(14)+' '+rgba(a,g(1))+') drop-shadow(0 0 '+px(28)+' '+rgba(a,g(0.45))+'); }',
+      '}',
+      /* breathe on intro sigil */
+      '@keyframes breathe {',
+      '  0%   { opacity:.10; filter:brightness(.4) drop-shadow(0 0 '+px(6)+' '+rgba(a,g(0.22))+'); }',
+      '  50%  { opacity:.92; filter:brightness(1.4) drop-shadow(0 0 '+px(36)+' '+rgba(a,g(1))+') drop-shadow(0 0 '+px(60)+' '+rgba(a,g(0.42))+'); }',
+      '  100% { opacity:.10; filter:brightness(.4) drop-shadow(0 0 '+px(6)+' '+rgba(a,g(0.22))+'); }',
+      '}',
+      /* lfmPulse dot tint */
+      '.lfm-h-dot:not(.idle) { background:'+rgb(a)+' !important; box-shadow:0 0 '+px(10)+' '+rgba(a,g(1))+' !important; }',
+      '.lfm-dot:not(.idle)   { background:'+rgb(a)+' !important; box-shadow:0 0 '+px(5)+' '+rgba(a,g(1))+' !important; }',
+      '.tc-dot.done, .tc-dot.live { background:'+rgb(a)+' !important; box-shadow:0 0 '+px(7)+' '+rgba(a,g(0.72))+' !important; }',
+      '.perf-fill { background:'+rgb(a)+' !important; }',
+      '#volFill   { background:'+rgba(a,0.90)+' !important; }',
+      '#volHandle { background:'+rgb(a)+' !important; box-shadow:0 0 5px '+rgba(a,g(0.6))+' !important; }',
+      /* modal rows hover */
+      '.lfm-modal-row:hover { border-color:'+rgba(s2,0.35)+' !important; background:'+rgba(p,0.10)+' !important; }',
+      /* sparkle canvas halo tint via CSS filter (non-invasive) */
+      '#sparkleCanvas, #sigilCanvas { filter:hue-rotate(var(--hue-rot,0deg)); }',
+    ].join('\n');
+  }
+
+  /* ─── apply all CSS custom properties ─── */
+  function applyPalette(colors) {
+    if (!colors || colors.length === 0) return;
+
+    var raw   = colors[0];
+    var raw2  = colors[1] || raw;
+    var raw3  = colors[2] || raw2;
+    var raw4  = colors[3] || raw3;
+
+    var p  = boostColor(raw[0],  raw[1],  raw[2]);
+    var s  = boostColor(raw2[0], raw2[1], raw2[2]);
+    var a  = boostColor(raw3[0], raw3[1], raw3[2]);
+    var a2 = boostColor(raw4[0], raw4[1], raw4[2]);
+
+    /* hue rotation for canvas sparkles (CSS filter, non-invasive) */
+    var hsl = toHsl(a[0], a[1], a[2]);
+    root.style.setProperty('--hue-rot', Math.round(hsl[0]*360) + 'deg');
+
+    /* glow intensity computed from RAW pixel color (pre-boost) so true saturation is seen */
+    var gf = calcGlowFactor(raw3[0], raw3[1], raw3[2]);
+
+    /* glass background: tinted from wallpaper palette */
+    root.style.setProperty('--glass-bg',       rgba(p, 0.22));
+    root.style.setProperty('--glass-bg-hover', rgba(p, 0.30));
+    root.style.setProperty('--glass',          rgba(p, 0.18));
+
+    var borderAlpha = 0.26;
+
+    /* border glow — only lfm-hero-card receives dynamic border via CSS override */
+    root.style.setProperty('--dyn-border-a',   rgba(s, borderAlpha));
+    root.style.setProperty('--dyn-border-b',   rgba(s, borderAlpha * 0.55));
+
+    /* animated scard top border */
+    root.style.setProperty('--accent-c1',  rgb(a));
+    root.style.setProperty('--accent-c2',  rgb(a2));
+    root.style.setProperty('--accent-c3',  rgb(s));
+    root.style.setProperty('--accent-glow', rgba(a, +(0.18 + 0.40 * gf).toFixed(3)));
+
+    /* card shadow: vivid → lighter tint, muted → richer */
+    var shadowAlpha = +(0.12 + 0.18 * gf).toFixed(3);
+    var shadowA = rgba(p, shadowAlpha);
+    root.style.setProperty('--shadow-card',  '0 6px 32px '+shadowA+', 0 1px 0 rgba(255,255,255,0.08) inset');
+    root.style.setProperty('--shadow-hover', '0 12px 40px '+shadowA+', 0 1px 0 rgba(255,255,255,0.14) inset');
+
+    /* text stays white — adjust dim/mute only if bg is very bright */
+    var bgLum = relLum(p[0], p[1], p[2]);
+    if (bgLum > 0.40) {
+      root.style.setProperty('--text',      '#080808');
+      root.style.setProperty('--text-dim',  'rgba(0,0,0,0.70)');
+      root.style.setProperty('--text-mute', 'rgba(0,0,0,0.42)');
+    } else {
+      root.style.setProperty('--text',      '#ffffff');
+      root.style.setProperty('--text-dim',  'rgba(255,255,255,0.65)');
+      root.style.setProperty('--text-mute', 'rgba(255,255,255,0.35)');
+    }
+
+    injectStyles(a, s, p, gf);
+  }
+
+  /* ─── load & sample image via Canvas ─── */
+  function loadAndExtract(url) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = canvas.height = SAMPLE_SIZE;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
+        var data = ctx.getImageData(0, 0, SAMPLE_SIZE, SAMPLE_SIZE).data;
+        var colors = extractPalette(data);
+        if (colors && colors.length >= 2) {
+          applyPalette(colors);
+        }
+      } catch(e) {
+        /* CORS taint or security error — fail silently, keep defaults */
+      }
+    };
+    img.onerror = function() { /* fail silently */ };
+    /* cache-bust for CORS preflight compliance */
+    img.src = url + (url.indexOf('?') === -1 ? '?' : '&') + '_cb=' + Date.now();
+  }
+
+  /* ─── watch for body background changes (wallpaper swap) ─── */
+  function observeWallpaper() {
+    var lastBg = '';
+    setInterval(function() {
+      var bg = getComputedStyle(document.body).backgroundImage;
+      if (bg && bg !== lastBg) {
+        lastBg = bg;
+        var match = bg.match(/url\(["']?([^"')]+)/);
+        if (match && match[1]) loadAndExtract(match[1]);
+      }
+    }, 3000);
+  }
+
+  /* ─── init — extract once on load, wallpaper is static ─── */
+  loadAndExtract(WALLPAPER_URL);
+})();
+
+/* ════════════════════════════════════════════════
+   FORCE-SYNC ALL SIGIL ANIMATIONS
+════════════════════════════════════════════════ */
+(function syncSigils() {
+  function doSync() {
+    var els = document.querySelectorAll('.sigil-img, .sigil-extra');
+    if (!els.length) return;
+    els.forEach(function(el) {
+      var saved = el.style.animation;
+      el.style.animation = 'none';
+      void el.offsetWidth; /* force reflow */
+      el.style.animation = saved || '';
+      el.style.animationDelay = '0s';
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', doSync);
+  } else {
+    doSync();
+  }
+})();
+
+/* ════════════════════════════════════════════════
+   INTRO TIMER
 ════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', function() {
-  // Tracker date
   var d = new Date();
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var el = document.getElementById('trackerDate');
   if (el) el.textContent = 'Today, ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
-  // Time-of-day label (manhã/tarde/noite) based on local time + AM/PM detection via locale
   function updateTimeOfDay(date) {
     var h = date.getHours();
     var min = date.getMinutes();
@@ -1073,8 +1341,7 @@ window.addEventListener('DOMContentLoaded', function() {
       var testFmt = new Intl.DateTimeFormat(navigator.language, {hour:'numeric'}).format(new Date(2000,0,1,13));
       uses12h = /pm|am/i.test(testFmt);
     } catch(e) {}
-
-    var label, badge;
+    var label;
     if (h >= 5 && h < 12) {
       label = uses12h ? 'Morning' : 'Manhã';
     } else if (h >= 12 && h < 18) {
@@ -1082,7 +1349,7 @@ window.addEventListener('DOMContentLoaded', function() {
     } else {
       label = uses12h ? 'Night' : 'Noite';
     }
-
+    var badge;
     if (uses12h) {
       var hh = h % 12 || 12;
       var mm = (min < 10 ? '0' : '') + min;
@@ -1092,14 +1359,12 @@ window.addEventListener('DOMContentLoaded', function() {
       var mm2 = (min < 10 ? '0' : '') + min;
       badge = hh2 + ':' + mm2;
     }
-
     var lbl = document.getElementById('timeOfDayLabel');
     var bdg = document.getElementById('timeOfDayBadge');
     if (lbl) lbl.textContent = label;
     if (bdg) bdg.textContent = badge;
   }
 
-  // Try to get timezone from IP first, fall back to local
   fetch('https://ipapi.co/json/')
     .then(function(r){ return r.json(); })
     .then(function(data) {
@@ -1111,11 +1376,8 @@ window.addEventListener('DOMContentLoaded', function() {
         updateTimeOfDay(new Date());
       }
     })
-    .catch(function() {
-      updateTimeOfDay(new Date());
-    });
+    .catch(function() { updateTimeOfDay(new Date()); });
 
-  // Update every minute
   setInterval(function() { updateTimeOfDay(new Date()); }, 60000);
 
   var intro = document.getElementById('intro');
@@ -1129,19 +1391,19 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 /* ════════════════════════════════════════════════
-   RAINBOW SPARKLES (title area)
+   SPARKLES (title area)
 ════════════════════════════════════════════════ */
 (function() {
   var sc = document.getElementById('sparkleCanvas');
   if (!sc) return;
   var ctx = sc.getContext('2d');
-  var W = sc.width = 220, H = sc.height = 60;
-  var sparks = [], CYCLE = 4000;
+  var W = sc.width = 200, H = sc.height = 50;
+  var sparks = [], CYCLE = 2000;
   var COLORS = ['#ffffff','#cccccc','#999999','#555555','#222222','#555555','#cccccc'];
-  function rainbowColor(o){ var t=((Date.now()%CYCLE)/CYCLE+o)%1; return COLORS[Math.floor(t*COLORS.length)%COLORS.length]; }
-  function Spark(){ var a=Math.random()*Math.PI*2,r=24+Math.random()*48; this.x=W/2+Math.cos(a)*r; this.y=H/2+Math.sin(a)*r*.42; this.vx=(Math.random()-.5)*1.1; this.vy=(Math.random()-.5)*1.1; this.size=1.8+Math.random()*2.8; this.alpha=.75+Math.random()*.25; this.decay=.011+Math.random()*.016; this.rot=Math.random()*Math.PI; this.rotV=(Math.random()-.5)*.16; this.phase=Math.random(); }
+  function bwColor(o){ var t=((Date.now()%CYCLE)/CYCLE+o)%1; return COLORS[Math.floor(t*COLORS.length)%COLORS.length]; }
+  function Spark(){ var a=Math.random()*Math.PI*2,r=20+Math.random()*40; this.x=W/2+Math.cos(a)*r; this.y=H/2+Math.sin(a)*r*.42; this.vx=(Math.random()-.5)*1.1; this.vy=(Math.random()-.5)*1.1; this.size=1.5+Math.random()*2.5; this.alpha=.75+Math.random()*.25; this.decay=.012+Math.random()*.018; this.rot=Math.random()*Math.PI; this.rotV=(Math.random()-.5)*.16; this.phase=Math.random(); }
   function drawStar(x,y,size,rot,alpha,color){ ctx.save(); ctx.globalAlpha=alpha; ctx.translate(x,y); ctx.rotate(rot); ctx.shadowColor=color; ctx.shadowBlur=8; ctx.fillStyle=color; ctx.beginPath(); for(var i=0;i<4;i++){var a=i*Math.PI/2,r1=size,r2=size*.28; ctx.lineTo(Math.cos(a)*r1,Math.sin(a)*r1); ctx.lineTo(Math.cos(a+Math.PI/4)*r2,Math.sin(a+Math.PI/4)*r2);} ctx.closePath(); ctx.fill(); ctx.restore(); }
-  function loop(){ ctx.clearRect(0,0,W,H); if(sparks.length<22) sparks.push(new Spark()); for(var i=sparks.length-1;i>=0;i--){var s=sparks[i]; s.x+=s.vx; s.y+=s.vy; s.alpha-=s.decay; s.rot+=s.rotV; if(s.alpha<=0){sparks.splice(i,1);continue;} drawStar(s.x,s.y,s.size,s.rot,s.alpha,rainbowColor(s.phase));} requestAnimationFrame(loop); }
+  function loop(){ ctx.clearRect(0,0,W,H); if(sparks.length<20) sparks.push(new Spark()); for(var i=sparks.length-1;i>=0;i--){var s=sparks[i]; s.x+=s.vx; s.y+=s.vy; s.alpha-=s.decay; s.rot+=s.rotV; if(s.alpha<=0){sparks.splice(i,1);continue;} drawStar(s.x,s.y,s.size,s.rot,s.alpha,bwColor(s.phase));} requestAnimationFrame(loop); }
   loop();
 })();
 
@@ -1152,84 +1414,51 @@ window.addEventListener('DOMContentLoaded', function() {
   var sc = document.getElementById('sigilCanvas');
   if (!sc) return;
   var ctx = sc.getContext('2d');
-  var W = sc.width = 160, H = sc.height = 160;
+  var W = sc.width = 140, H = sc.height = 140;
   var sparks = [];
   var COLORS = ['#ffffff','#dddddd','#999999','#555555','#999999','#dddddd'];
-  function rainbowColor(o){ var t=((Date.now()%4000)/4000+o)%1; return COLORS[Math.floor(t*COLORS.length)%COLORS.length]; }
-  function Spark(){ var a=Math.random()*Math.PI*2,r=22+Math.random()*46; this.x=W/2+Math.cos(a)*r; this.y=H/2+Math.sin(a)*r*.7; this.vx=(Math.random()-.5)*1.1; this.vy=(Math.random()-.5)*1.1; this.size=1.8+Math.random()*2.8; this.alpha=.75+Math.random()*.25; this.decay=.011+Math.random()*.016; this.rot=Math.random()*Math.PI; this.rotV=(Math.random()-.5)*.16; this.phase=Math.random(); }
-  function drawStar(x,y,size,rot,alpha,color){ ctx.save(); ctx.globalAlpha=alpha; ctx.translate(x,y); ctx.rotate(rot); ctx.shadowColor=color; ctx.shadowBlur=8; ctx.fillStyle=color; ctx.beginPath(); for(var i=0;i<4;i++){var a=i*Math.PI/2,r1=size,r2=size*.28; ctx.lineTo(Math.cos(a)*r1,Math.sin(a)*r1); ctx.lineTo(Math.cos(a+Math.PI/4)*r2,Math.sin(a+Math.PI/4)*r2);} ctx.closePath(); ctx.fill(); ctx.restore(); }
-  function loop(){ ctx.clearRect(0,0,W,H); if(sparks.length<26) sparks.push(new Spark()); for(var i=sparks.length-1;i>=0;i--){var s=sparks[i]; s.x+=s.vx; s.y+=s.vy; s.alpha-=s.decay; s.rot+=s.rotV; if(s.alpha<=0){sparks.splice(i,1);continue;} drawStar(s.x,s.y,s.size,s.rot,s.alpha,rainbowColor(s.phase));} requestAnimationFrame(loop); }
+  function bwColor(o){ var t=((Date.now()%2000)/2000+o)%1; return COLORS[Math.floor(t*COLORS.length)%COLORS.length]; }
+  function Spark(){ var a=Math.random()*Math.PI*2,r=20+Math.random()*30; this.x=W/2+Math.cos(a)*r; this.y=H/2+Math.sin(a)*r; this.vx=(Math.random()-.5)*.9; this.vy=(Math.random()-.5)*.9; this.size=1.2+Math.random()*2; this.alpha=.65+Math.random()*.35; this.decay=.013+Math.random()*.015; this.rot=Math.random()*Math.PI; this.rotV=(Math.random()-.5)*.13; this.phase=Math.random(); }
+  function drawStar(x,y,size,rot,alpha,color){ ctx.save(); ctx.globalAlpha=alpha; ctx.translate(x,y); ctx.rotate(rot); ctx.shadowColor=color; ctx.shadowBlur=7; ctx.fillStyle=color; ctx.beginPath(); for(var i=0;i<4;i++){var a=i*Math.PI/2,r1=size,r2=size*.28; ctx.lineTo(Math.cos(a)*r1,Math.sin(a)*r1); ctx.lineTo(Math.cos(a+Math.PI/4)*r2,Math.sin(a+Math.PI/4)*r2);} ctx.closePath(); ctx.fill(); ctx.restore(); }
+  function loop(){ ctx.clearRect(0,0,W,H); if(sparks.length<16) sparks.push(new Spark()); for(var i=sparks.length-1;i>=0;i--){var s=sparks[i]; s.x+=s.vx; s.y+=s.vy; s.alpha-=s.decay; s.rot+=s.rotV; if(s.alpha<=0){sparks.splice(i,1);continue;} drawStar(s.x,s.y,s.size,s.rot,s.alpha,bwColor(s.phase));} requestAnimationFrame(loop); }
   loop();
 })();
 
 /* ════════════════════════════════════════════════
-   AUTO LYRICS — rotates through all 34 Laveyan lines
-   Updates both:
-     #lyrTxt       (bottom section, small rainbow text)
-     #heroRotTxt   (hero pill, replaces "Today is…")
+   AUTO LYRICS
 ════════════════════════════════════════════════ */
 (function() {
   var LINES = [
-    "Satanás representa todos os chamados pecados,",
-    "pois todos eles levam à gratificação física,",
-    "mental ou emocional.",
-    "Celebre as suas vontades.",
-    "Satanás representa existência vital",
-    "em vez de sonhos espirituais fantasiosos.",
-    "Satanás representa bondade para aqueles que a merecem,",
-    "em vez de amor desperdiçado em ingratos.",
-    "Sem carne não pode haver espírito.",
-    "Honre o que você é.",
-    "A culpa é a corrente que a Igreja forjou",
-    "para manter o rebanho acorrentado.",
+    ",",",","","","","","","","","","","",
     "Indulgência não é fraqueza.",
     "É a afirmação de que você existe.",
     "Não existe mal na carne.",
     "O mal está em negar o que você é.",
-    "O satanista sabe que o homem criou Deus",
-    "à sua própria imagem,",
-    "covarde e ressentida.",
-    "Toda religião espiritual é invenção",
-    "de um cérebro carnal",
-    "que não suportou sua própria finitude.",
-    "A luxúria é sagrada",
-    "onde existe consentimento e desejo genuíno.",
-    "Reprimi-la é o verdadeiro pecado.",
-    "Satanismo é uma religião da carne,",
-    "do mundano, do carnal.",
-    "Tudo que a Igreja condena.",
-    "A estupidez é o único pecado imperdoável",
-    "porque é o único verdadeiramente voluntário.",
-    "Satanás não é o inimigo do homem.",
-    "É o único que nunca lhe mentiu.",
+    "","","","","","","","","","","","","","","","",
     "Celebre seus instintos.",
     "Eles são mais honestos",
     "do que qualquer mandamento."
   ];
   var idx = 0, bottomEl = null, heroEl = null, timer = null;
   var HOLD_MS = 2600, FADE_MS = 200;
-
-  function getBottom() { if (!bottomEl) bottomEl = document.getElementById('lyrTxt');    return bottomEl; }
+  function getBottom() { if (!bottomEl) bottomEl = document.getElementById('lyrTxt'); return bottomEl; }
   function getHero()   { if (!heroEl)   heroEl   = document.getElementById('heroRotTxt'); return heroEl; }
-
   function showNext() {
     clearTimeout(timer);
     var b = getBottom(), h = getHero();
-    // fade out
     if (b) b.style.opacity = '0';
-    if (h) h.closest('.hero-mot-pill').style.opacity = '0';
+    if (h) h.closest && h.closest('.hero-mot-pill') && (h.closest('.hero-mot-pill').style.opacity = '0');
     timer = setTimeout(function() {
       var line = LINES[idx]; idx = (idx + 1) % LINES.length;
       if (b) b.textContent = line;
       if (h) h.textContent = line;
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         if (b) b.style.opacity = '1';
-        if (h) h.closest('.hero-mot-pill').style.opacity = '1';
+        if (h && h.closest && h.closest('.hero-mot-pill')) h.closest('.hero-mot-pill').style.opacity = '1';
         timer = setTimeout(showNext, HOLD_MS);
       }); });
     }, FADE_MS + 20);
   }
-
   window.startLyricsAuto = function() {
     clearTimeout(timer); idx = 0;
     var b = getBottom(), h = getHero();
@@ -1244,7 +1473,7 @@ window.addEventListener('DOMContentLoaded', function() {
    DISCORD PRESENCE (Lanyard WebSocket)
 ════════════════════════════════════════════════ */
 (function() {
-  var DISCORD_ID = '1422064240902013009';
+  var DISCORD_ID = '1465005109640691765';
   var WS_URL  = 'wss://api.lanyard.rest/socket';
   var REST_URL = 'https://api.lanyard.rest/v1/users/' + DISCORD_ID;
   var ws, hbInterval, _lastOnline = null, _seenTimer = null;
@@ -1300,24 +1529,19 @@ window.addEventListener('DOMContentLoaded', function() {
    SOCIAL CARD TABS
 ════════════════════════════════════════════════ */
 function switchTab(tab, btn) {
-  // update active button
   document.querySelectorAll('.sect-tab').forEach(function(b){ b.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  // show/hide cards
+  document.querySelectorAll('.sect-tab[data-tab="'+tab+'"]').forEach(function(b){ b.classList.add('active'); });
   var cards = document.querySelectorAll('.scard');
   cards.forEach(function(c) {
     if (tab === 'all') {
       c.style.display = '';
     } else {
-      // match: tiktok, github, insta, lastfm
       c.style.display = c.classList.contains(tab) ? '' : 'none';
     }
   });
-  // also adjust grid columns
   var grid = document.querySelector('.social-cards');
   if (grid) grid.style.gridTemplateColumns = tab === 'all' ? '' : '1fr';
 }
-
 
 function openLfmModal() {
   var m = document.getElementById('lfmModal');
@@ -1330,9 +1554,7 @@ function closeLfmModal() {
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmModal(); });
 
 /* ════════════════════════════════════════════════
-   LAST.FM — now playing + scrobble count + profile pic
-   Updates both the hero mini-player AND the bottom card.
-   Bug fixes: robust element checks, consistent idle state.
+   LAST.FM
 ════════════════════════════════════════════════ */
 (function() {
   var LFM_USER = 'guzrr';
@@ -1340,21 +1562,13 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
   var POLL_MS  = 30000;
   var _lastTrackKey = '';
 
-  /* ── Bottom card elements — removed (player moved to modal) ── */
-  var artEl     = null; // removed
-  var trackEl   = null; // removed
-  var artistEl  = null; // removed
-  var dotEl     = null; // removed
-  var labelEl   = null; // removed
   var scrobEl   = document.getElementById('lfm-scrobbles-count');
   var profAvEl  = document.getElementById('lfm-profile-av');
   var userNameEl= document.getElementById('lfm-username');
 
-  /* ── Modal elements ── */
   var modalDot   = document.getElementById('modal-dot');
   var modalLabel = document.getElementById('modal-now-label');
 
-  /* ── Hero mini-player elements (new IDs) ── */
   var hArt    = document.getElementById('lfm-h-art');
   var hTrack  = document.getElementById('lfm-h-track');
   var hArtist = document.getElementById('lfm-h-artist');
@@ -1364,7 +1578,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
   var hUname  = document.getElementById('lfm-h-uname');
   var hScr    = document.getElementById('lfm-h-scr');
 
-  /* ── Performance card ── */
   var perfCur  = document.getElementById('perfCurrent');
   var perfFill = document.getElementById('perfFill');
   var perfTotalEl = document.getElementById('perfTotal');
@@ -1377,11 +1590,9 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
     return t;
   }
 
-  /* ── Tracker sidebar dot ── */
   var tcDot  = document.getElementById('lfm-tc-dot');
   var tcText = document.getElementById('lfm-tc-text');
 
-  /* Load user info once */
   function loadUserInfo() {
     var url = 'https://ws.audioscrobbler.com/2.0/'
       + '?method=user.getinfo'
@@ -1393,17 +1604,14 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
       .then(function(data) {
         if (!data.user) return;
         var u = data.user;
-        /* username */
         if (userNameEl && u.name) userNameEl.textContent = u.name;
         if (hUname     && u.name) hUname.textContent     = u.name;
-        /* scrobble count */
         if (u.playcount) {
           var n = parseInt(u.playcount, 10);
           var fmt = n.toLocaleString('pt-BR');
           if (scrobEl)  scrobEl.textContent  = fmt + ' scrobbles';
           if (hScr)     hScr.textContent     = fmt + ' scrobbles';
           if (perfCur)  perfCur.textContent  = fmt;
-          /* performance bar fill with auto-increasing target */
           var target = calcPerfTarget(n);
           var prevTarget = target - PERF_STEP;
           if (perfTotalEl) perfTotalEl.textContent = (target / 1000) + 'k';
@@ -1412,7 +1620,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
             perfFill.style.width = pct + '%';
           }
         }
-        /* profile avatar */
         var imgs = u.image || [], src = '';
         for (var i = imgs.length - 1; i >= 0; i--) {
           if (imgs[i]['#text'] && imgs[i]['#text'].indexOf('2a96cbd8') === -1) {
@@ -1427,7 +1634,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
       .catch(function(){});
   }
 
-  /* Poll recent tracks */
   function pollNowPlaying() {
     var url = 'https://ws.audioscrobbler.com/2.0/'
       + '?method=user.getrecenttracks'
@@ -1446,11 +1652,9 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
         var artist = (t.artist && t.artist['#text']) || '';
         var key    = name + '|' + artist;
 
-        /* update text in both locations */
         if (hTrack)   hTrack.textContent   = name;
         if (hArtist)  hArtist.textContent  = artist;
 
-        /* update modal platform links */
         var q = encodeURIComponent(artist + ' ' + name);
         var ytLink = document.getElementById('lfm-yt-link');
         var spLink = document.getElementById('lfm-sp-link');
@@ -1458,15 +1662,13 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
         if (ytLink) ytLink.href = 'https://music.youtube.com/search?q=' + q;
         if (spLink) spLink.href = 'https://open.spotify.com/search/' + q;
         if (scLink) scLink.href = 'https://soundcloud.com/search?q=' + q;
-        /* update modal artist/track text */
         ['1','2','3'].forEach(function(n2){
           var a = document.getElementById('modal-artist'+n2);
-          var t = document.getElementById('modal-track'+n2);
+          var t2 = document.getElementById('modal-track'+n2);
           if (a) a.textContent = artist;
-          if (t) t.textContent = name;
+          if (t2) t2.textContent = name;
         });
 
-        /* update live/idle state */
         if (nowPlaying) {
           if (hDot)    hDot.className    = 'lfm-h-dot';
           if (hLabel)  { hLabel.className = 'lfm-h-label'; hLabel.textContent = 'LIVE'; }
@@ -1483,7 +1685,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
           if (tcText)  tcText.textContent = 'Last.fm: ' + name.substring(0,18);
         }
 
-        /* artwork — only update if track changed */
         if (key !== _lastTrackKey) {
           _lastTrackKey = key;
           var imgs = t.image || [], art = '';
@@ -1492,12 +1693,10 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
             if (u2 && u2.indexOf('2a96cbd8') === -1) { art = u2; break; }
           }
           if (hArt)  { hArt.src  = art ? art : ''; hArt.style.opacity  = art ? '1' : '0'; }
-          /* dynamic color on hero player based on album art */
           var heroCard = document.querySelector('.lfm-hero-card');
           if (heroCard && art) {
             heroCard.style.setProperty('--lfm-art-url', 'url(' + art + ')');
           }
-          /* blurred card bg */
           var bg = document.getElementById('lfm-card-bg');
           if (bg && art && !(profAvEl && profAvEl.src)) bg.style.backgroundImage = 'url(' + art + ')';
         }
