@@ -366,19 +366,6 @@
   </style>
 </head>
 <body>
-
-<!-- ════════════ LIQUID GLASS SVG FILTER ════════════ -->
-<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
-  <defs>
-    <filter id="lg-dist" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="linearRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="3" seed="2" result="noise"/>
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
-      <feGaussianBlur in="displaced" stdDeviation="0.6" result="blurred"/>
-      <feBlend in="blurred" in2="SourceGraphic" mode="normal"/>
-    </filter>
-  </defs>
-</svg>
-
 <div class="dashboard" id="card">
 
   <aside class="sidebar">
@@ -407,7 +394,7 @@
     </div>
     <div class="profile-photo-wrap">
       <a class="profile-photo-link" href="https://www.instagram.com/ea6ts" target="_blank" rel="noopener">
-        <img class="profile-photo" id="ig-profile-photo" src="" alt="@ea6ts">
+        <img class="profile-photo" src="https://unavatar.io/instagram/ea6ts" alt="@ea6ts">
       </a>
     </div>
     <div class="profile-username">@ea6ts</div>
@@ -520,26 +507,6 @@
   window.addEventListener('DOMContentLoaded',function(){
     setTimeout(function(){document.getElementById('card').classList.add('revealed');},400);
   });
-})();
-
-/* ════ INSTAGRAM PROFILE PHOTO ════ */
-(function() {
-  var el = document.getElementById('ig-profile-photo');
-  if (!el) return;
-  var sources = [
-    'https://unavatar.io/instagram/ea6ts',
-    'https://avatars.io/instagram/ea6ts',
-    'https://api.multiavatar.com/ea6ts.png'
-  ];
-  var idx = 0;
-  function tryNext() {
-    if (idx >= sources.length) return;
-    var img = new Image();
-    img.onload = function() { el.src = this.src; };
-    img.onerror = function() { idx++; tryNext(); };
-    img.src = sources[idx++];
-  }
-  tryNext();
 })();
 </script>
 </body>
