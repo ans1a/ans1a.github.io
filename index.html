@@ -916,6 +916,34 @@
     }
     .lfm-h-foot    { border-top-color: var(--dyn-border-b) !important; }
 
+    /* Borderless glass override */
+    :root {
+      --glass-shine: transparent;
+      --glass-border: transparent;
+      --dyn-border-a: transparent;
+      --dyn-border-b: transparent;
+    }
+    .glass,
+    .sidebar,
+    .social-tabs-bar,
+    .hero-section,
+    .lfm-hero-card,
+    .scard,
+    .scard-av,
+    .tc-badge,
+    .dc-card,
+    .tc-item,
+    .lfm-modal-card,
+    .lfm-modal-close,
+    .lfm-modal-row,
+    .bottom-section {
+      border-color: transparent !important;
+    }
+    .scard::before {
+      opacity: 0;
+      box-shadow: none;
+    }
+
   </style>
 </head>
 <body>
@@ -1067,7 +1095,7 @@
           <div class="scard-bg" id="ig-bg"></div>
           <div class="scard-top">
             <div class="scard-av">
-              <img id="ig-av" src="https://unavatar.io/instagram/ea6ts" alt="" loading="lazy">
+              <img id="ig-av" src="instagram-avatar.jpg" alt="" loading="lazy">
             </div>
             <div class="scard-ico">
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
@@ -1773,6 +1801,47 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
   var PERF_BASE = 30000;
   var PERF_STEP = 20000;
 
+  function pickValidLastFmImage(images) {
+    if (!Array.isArray(images)) return '';
+    for (var i = images.length - 1; i >= 0; i--) {
+      var src = images[i] && images[i]['#text'];
+      if (src && src.indexOf('2a96cbd8') === -1) return src;
+    }
+    return '';
+  }
+
+  function applyHeroArt(src) {
+    var heroCard = document.querySelector('.lfm-hero-card');
+    var bg = document.getElementById('lfm-card-bg');
+
+    if (hArt) {
+      hArt.src = src || '';
+      hArt.style.opacity = src ? '1' : '0';
+    }
+    if (heroCard) {
+      if (src) heroCard.style.setProperty('--lfm-art-url', 'url(' + src + ')');
+      else heroCard.style.removeProperty('--lfm-art-url');
+    }
+    if (bg && src && !(profAvEl && profAvEl.src)) {
+      bg.style.backgroundImage = 'url(' + src + ')';
+    }
+  }
+
+  function fetchAlbumArtFallback(track, artist, album) {
+    var term = [artist, track, album].filter(Boolean).join(' ');
+    if (!term) return Promise.resolve('');
+
+    var url = 'https://itunes.apple.com/search?media=music&entity=song&limit=1&term=' + encodeURIComponent(term);
+    return fetch(url)
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(data) {
+        var hit = data && data.results && data.results[0];
+        var src = hit && (hit.artworkUrl100 || hit.artworkUrl60 || hit.artworkUrl30);
+        return src ? src.replace(/\/[0-9]+x[0-9]+bb\./, '/512x512bb.') : '';
+      })
+      .catch(function(){ return ''; });
+  }
+
   function calcPerfTarget(n) {
     var t = PERF_BASE;
     while (n >= t) t += PERF_STEP;
@@ -1809,12 +1878,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
             perfFill.style.width = pct + '%';
           }
         }
-        var imgs = u.image || [], src = '';
-        for (var i = imgs.length - 1; i >= 0; i--) {
-          if (imgs[i]['#text'] && imgs[i]['#text'].indexOf('2a96cbd8') === -1) {
-            src = imgs[i]['#text']; break;
-          }
-        }
+        var src = pickValidLastFmImage(u.image || []);
         if (src) {
           if (profAvEl) profAvEl.src = src;
           if (hAv)      hAv.src = src;
@@ -1839,6 +1903,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
         var nowPlaying = !!(t['@attr'] && t['@attr']['nowplaying'] === 'true');
         var name   = t.name   || '—';
         var artist = (t.artist && t.artist['#text']) || '';
+        var album  = (t.album && t.album['#text']) || '';
         var key    = name + '|' + artist;
 
         if (hTrack)   hTrack.textContent   = name;
@@ -1876,18 +1941,14 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLfmM
 
         if (key !== _lastTrackKey) {
           _lastTrackKey = key;
-          var imgs = t.image || [], art = '';
-          for (var i = imgs.length - 1; i >= 0; i--) {
-            var u2 = imgs[i]['#text'];
-            if (u2 && u2.indexOf('2a96cbd8') === -1) { art = u2; break; }
+          var art = pickValidLastFmImage(t.image || []);
+          if (art) {
+            applyHeroArt(art);
+          } else {
+            fetchAlbumArtFallback(name, artist, album).then(function(fallbackArt) {
+              applyHeroArt(fallbackArt);
+            });
           }
-          if (hArt)  { hArt.src  = art ? art : ''; hArt.style.opacity  = art ? '1' : '0'; }
-          var heroCard = document.querySelector('.lfm-hero-card');
-          if (heroCard && art) {
-            heroCard.style.setProperty('--lfm-art-url', 'url(' + art + ')');
-          }
-          var bg = document.getElementById('lfm-card-bg');
-          if (bg && art && !(profAvEl && profAvEl.src)) bg.style.backgroundImage = 'url(' + art + ')';
         }
       })
       .catch(function(){ setIdle(); });

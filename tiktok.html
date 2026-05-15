@@ -357,6 +357,9 @@
       50%  { text-shadow: 0 0 14px var(--accent-glow), 0 0 30px var(--accent-glow); }
       100% { text-shadow: 0 0 4px var(--accent-glow); }
     }
+    :root { --glass-shine: transparent; --glass-border: transparent; --dyn-border-a: transparent; --dyn-border-b: transparent; }
+    .sidebar, .profile-card, .profile-photo { border-color: transparent !important; }
+    .profile-card::before { opacity: 0; box-shadow: none; }
     @media (max-width:480px) {
       .dashboard { grid-template-columns: 1fr; }
       .sidebar { flex-direction:row; position:static; padding:10px 14px; }
